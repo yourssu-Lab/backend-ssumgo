@@ -37,4 +37,5 @@ out/
 /.nb-gradle/s
 
 ### yml
-#src/main/**/application-*.yml
+src/main/**/application.yml
+src/main/**/application-*.yml
