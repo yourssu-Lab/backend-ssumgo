@@ -3,6 +3,7 @@ package com.yourssu.ssumgo.student.storage.domain.student
 import com.yourssu.ssumgo.student.implement.domain.student.Student
 import com.yourssu.ssumgo.student.implement.domain.student.StudentRepository
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -25,6 +26,7 @@ class StudentRepositoryImpl(
 }
 
 interface StudentJpaRepository : JpaRepository<StudentEntity, Long> {
+    @Query("select s from StudentEntity s where s.id = :id")
     fun get(id: Long): StudentEntity?
 
     fun getByYourssuId(yourssuId: String): StudentEntity?
