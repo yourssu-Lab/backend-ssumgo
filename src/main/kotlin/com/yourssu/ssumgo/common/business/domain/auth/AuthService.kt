@@ -5,6 +5,7 @@ import com.yourssu.ssumgo.common.implement.domain.auth.AccessTokenGenerator
 import com.yourssu.ssumgo.common.implement.support.soomsil.*
 import com.yourssu.ssumgo.student.implement.domain.student.StudentWriter
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AuthService(
@@ -13,6 +14,7 @@ class AuthService(
     private val accessTokenGenerator: AccessTokenGenerator,
     private val studentWriter: StudentWriter,
 ) {
+    @Transactional
     fun signIn(command: SignInCommand): SignInResponse {
         val token: TokenResponse = authClient.signIn(
             SignInClientRequest(
@@ -23,6 +25,7 @@ class AuthService(
         return signInSsumgo(token)
     }
 
+    @Transactional
     fun issueRefreshToken(request: RefreshTokenRequest): SignInResponse {
         val token = authClient.getRefreshToken(
             RefreshTokenClientRequest(
