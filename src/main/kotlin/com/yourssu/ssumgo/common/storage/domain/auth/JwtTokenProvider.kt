@@ -8,7 +8,7 @@ import java.util.*
 
 @Component
 class JwtTokenProvider(
-    @Value("\${classpath:security.jwt.token.expiration-time}")
+    @Value("\${security.jwt.token.expiration-time}")
     private val expirationTime: String
 ) {
     private val enc = Jwts.ENC.A256GCM

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 
 @FeignClient(
     name = "soomsilClient",
-    url = "https://test.ground.yourssu.com/ground",
+    url = "\${feign.client.config.ground-url}",
     configuration = [FeignConfig::class],
 )
 interface SoomsilFeignClientImpl: UserClient {

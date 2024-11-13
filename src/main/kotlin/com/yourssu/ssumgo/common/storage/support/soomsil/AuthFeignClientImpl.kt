@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody
 
 @FeignClient(
     name = "authClient",
-    url = "https://api.test.auth.yourssu.com:443",
+    url = "\${feign.client.config.auth-url}",
     configuration = [FeignConfig::class],
+
 )
 interface AuthFeignClientImpl: AuthClient {
     @PostMapping("/v2/auth/sign-in")
