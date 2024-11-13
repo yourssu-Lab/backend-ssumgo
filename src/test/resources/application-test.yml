@@ -4,7 +4,7 @@ server:
 spring:
   config:
     activate:
-      on-profile: local
+      on-profile: test
   datasource:
     url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
@@ -21,8 +21,8 @@ spring:
 feign:
   client:
     config:
-      auth-url: "api.test.auth.yourssu.com:443"
-      ground-url: "api.test.yourssu.com/ground"
+      auth-url: "https://api.test.auth.yourssu.com:443"
+      ground-url: "https://api.test.yourssu.com/ground"
 
 security:
   jwt:
