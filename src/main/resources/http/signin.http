@@ -1,0 +1,75 @@
+@authUrl = https://api.test.auth.yourssu.com
+@serverUrl = localhost:8080
+
+// 이메일, 비밀번호를 설정한다.
+// @soongsil.ac.kr 이메일을 사용해야 한다.
+@email = "nggus5@soongsil.ac.kr"
+
+@password = "leopassword123123"
+@nickname = "leoNickname"
+@departmentId = 0
+
+// 이메일 인증 요청
+###
+POST {{authUrl}}/v2/auth/verification/email
+Content-Type: application/json
+
+{
+  "email": {{email}},
+  "verificationType": "SIGN_UP"
+}
+
+> {%
+    const responseBody = response.body;
+    client.global.set("sessionToken", `"${responseBody.sessionToken}"`);
+    client.log("sessionToken: " + responseBody.sessionToken);
+%}
+###
+
+// 숨쉴때 회원가입 요청
+###
+POST {{authUrl}}/v2/auth/sign-up
+Content-Type: application/json
+
+{
+  "departmentId": {{departmentId}},
+  "email": {{email}},
+  "nickName": {{nickname}},
+  "password": {{password}},
+  "sessionToken": {{sessionToken}}
+}
+###
+
+// 숨쉴때 로그인 요청
+###
+POST {{authUrl}}/v2/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": {{email}},
+  "password": {{password}}
+}
+
+> {%
+    const responseBody = response.body;
+    client.global.set("accessToken", `"${responseBody.accessToken}"`);
+    client.log("accessToken: " + responseBody.accessToken);
+%}
+###
+
+// 숨쉴때 회원탈퇴 요청
+###
+POST {{authUrl}}/v2/auth/withdraw
+Authorization: {{accessToken}}
+
+###
+
+// 숭실숨고 로그인 요청
+###
+POST {{serverUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": {{email}},
+  "password": {{password}}
+}
