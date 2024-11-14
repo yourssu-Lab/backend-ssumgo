@@ -42,6 +42,9 @@ class JwtTokenProvider(
     }
 
     private fun trimBearer(token: String): String {
+        if (!token.startsWith(BEARER_FORMAT)) {
+            throw IllegalArgumentException("Invalid token: No Bearer")
+        }
         return token.replace(BEARER_FORMAT, "")
     }
 

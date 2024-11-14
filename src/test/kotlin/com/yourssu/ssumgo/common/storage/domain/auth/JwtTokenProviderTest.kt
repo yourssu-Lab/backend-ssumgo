@@ -26,7 +26,7 @@ class JwtTokenProviderTest {
         val id = 1L
         val token = jwtTokenProvider.generateTokenWithId(id)
 
-        val actual = jwtTokenProvider.extractStudentId(token)
+        val actual = jwtTokenProvider.extractStudentId(JwtTokenProvider.BEARER_FORMAT + token)
 
         assertEquals(id, actual)
     }
