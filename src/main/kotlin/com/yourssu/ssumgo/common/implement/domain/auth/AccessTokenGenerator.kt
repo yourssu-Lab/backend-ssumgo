@@ -10,8 +10,4 @@ class AccessTokenGenerator(
     fun generateToken(id: Long): String {
         return jwtTokenProvider.generateTokenWithId(id)
     }
-
-    fun formatingBearer(token: String): String {
-        return "Bearer $token"
-    }
 }
