@@ -33,7 +33,8 @@
     - [x] 클라이언트에게 ssumgo-AccessToken과 RefreshToken과 StudentId를 반환한다.
 
 ### 인가
-- [x] 권한 확인이-AccessToken을 받아서 권한을 확인한다.
+- [x] 권한 확인
+    - [x] AccessToken을 받아서 권한을 확인한다.
     - [x] 권한이 있으면 Argument Resolved로 ssumgo student id를 받아와서 요청을 처리한다.
     - [x] 유효하지 않는 토큰이면 401 Unauthorized을 반환한다.
     - [x] 권한이 없으면 403 Forbidden을 반환한다.
