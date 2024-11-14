@@ -22,7 +22,7 @@ feign:
   client:
     config:
       auth-url: "https://api.test.auth.yourssu.com:443"
-      ground-url: "https://api.test.yourssu.com/ground"
+g      ground-url: "https://test.ground.yourssu.com/ground"
 
 security:
   jwt:
