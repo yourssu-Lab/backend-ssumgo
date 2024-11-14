@@ -21,8 +21,8 @@ spring:
 feign:
   client:
     config:
-      auth-url: "https://api.test.auth.yourssu.com:443"
-g      ground-url: "https://test.ground.yourssu.com/ground"
+      auth-url: "https://api.test.auth.yourssu.com"
+      ground-url: "https://test.ground.yourssu.com/ground"
 
 security:
   jwt:
