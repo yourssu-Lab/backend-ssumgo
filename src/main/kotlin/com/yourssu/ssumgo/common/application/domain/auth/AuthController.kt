@@ -4,6 +4,7 @@ import com.yourssu.ssumgo.common.application.domain.common.Response
 import com.yourssu.ssumgo.common.business.domain.auth.AuthService
 import com.yourssu.ssumgo.common.business.domain.auth.SignInCommand
 import com.yourssu.ssumgo.common.business.domain.auth.SignInResponse
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -18,13 +19,13 @@ class AuthController(
     @PostMapping("/login")
     fun signIn(@RequestBody request: SignInRequest): ResponseEntity<Response<SignInResponse>> {
         val response = authService.signIn(request.toCommand())
-        return ResponseEntity.ok(Response(result = response))
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response(result = response))
     }
 
     @PostMapping("/refresh")
     fun issueRefreshToken(@RequestBody request: RefreshTokenRequest): ResponseEntity<Response<SignInResponse>> {
         val response = authService.issueRefreshToken(request)
-        return ResponseEntity.ok(Response(result = response))
+        return ResponseEntity.status(HttpStatus.CREATED).body(Response(result = response))
     }
 }
 
