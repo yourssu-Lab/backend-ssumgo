@@ -52,7 +52,7 @@ Content-Type: application/json
 
 > {%
     const responseBody = response.body;
-    client.global.set("accessToken", `"${responseBody.accessToken}"`);
+    client.global.set("accessToken", responseBody.accessToken);
     client.log("accessToken: " + responseBody.accessToken);
 %}
 ###
@@ -60,7 +60,7 @@ Content-Type: application/json
 // 숨쉴때 회원탈퇴 요청
 ###
 POST {{authUrl}}/v2/auth/withdraw
-Authorization: {{accessToken}}
+Authorization: Bearer {{accessToken}}
 
 ###
 
