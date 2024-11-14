@@ -20,4 +20,14 @@ class JwtTokenProviderTest {
 
         assertNotNull(token)
     }
+
+    @Test
+    fun extractStudentId() {
+        val id = 1L
+        val token = jwtTokenProvider.generateTokenWithId(id)
+
+        val actual = jwtTokenProvider.extractStudentId(token)
+
+        assertEquals(id, actual)
+    }
 }

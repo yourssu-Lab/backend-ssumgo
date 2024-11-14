@@ -2,6 +2,7 @@ package com.yourssu.ssumgo.common.storage.support.soomsil
 
 import com.yourssu.ssumgo.common.implement.domain.auth.AccessTokenGenerator
 import com.yourssu.ssumgo.common.implement.support.soomsil.SignInClientRequest
+import com.yourssu.ssumgo.common.storage.domain.auth.JwtTokenProvider
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -16,9 +17,6 @@ class UserFeignClientImplTest {
     @Autowired
     private lateinit var userClient: SoomsilFeignClientImpl
 
-    @Autowired
-    private lateinit var accessTokenGenerator: AccessTokenGenerator
-
     @Test
     @Disabled
     fun getUser() {
@@ -26,7 +24,7 @@ class UserFeignClientImplTest {
         val tokenResponse = authClient.signIn(request)
 
         assertDoesNotThrow {
-            val response = userClient.getUser(accessTokenGenerator.formatingBearer(tokenResponse.accessToken))
+            val response = userClient.getUser("${JwtTokenProvider.BEARER_FORMAT} ${tokenResponse.accessToken}")
         }
     }
 }

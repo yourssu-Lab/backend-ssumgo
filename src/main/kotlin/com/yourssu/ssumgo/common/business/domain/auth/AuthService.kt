@@ -3,6 +3,7 @@ package com.yourssu.ssumgo.common.business.domain.auth
 import com.yourssu.ssumgo.common.application.domain.auth.RefreshTokenRequest
 import com.yourssu.ssumgo.common.implement.domain.auth.AccessTokenGenerator
 import com.yourssu.ssumgo.common.implement.support.soomsil.*
+import com.yourssu.ssumgo.common.storage.domain.auth.JwtTokenProvider
 import com.yourssu.ssumgo.student.implement.domain.student.StudentWriter
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -36,7 +37,7 @@ class AuthService(
     }
 
     private fun signInSsumgo(token: TokenResponse): SignInResponse {
-        val userResponse: UserResponse = userClient.getUser(accessTokenGenerator.formatingBearer(token.accessToken))
+        val userResponse: UserResponse = userClient.getUser("${JwtTokenProvider.BEARER_FORMAT} ${token.accessToken}")
         val student = studentWriter.signIn(userResponse.toDomain())
         return SignInResponse(
             accessToken = accessTokenGenerator.generateToken(student.id!!),

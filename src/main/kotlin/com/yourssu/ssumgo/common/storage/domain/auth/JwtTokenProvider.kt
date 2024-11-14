@@ -14,9 +14,14 @@ class JwtTokenProvider(
     private val enc = Jwts.ENC.A256GCM
     private val secretKey = enc.key().build()
 
+    companion object {
+        const val BEARER_FORMAT = "Bearer "
+        const val STUDENT_SIGN = "id"
+    }
+
     fun generateTokenWithId(studentId: Long): String {
         val claims = Jwts.claims()
-            .add("id", studentId.toString())
+            .add(STUDENT_SIGN, studentId.toString())
             .build()
         return generateToken(claims)
     }
@@ -28,5 +33,29 @@ class JwtTokenProvider(
             .expiration(Date(Date().time + expirationTime.toLong()))
             .encryptWith(secretKey, enc)
             .compact()
+    }
+
+    fun extractStudentId(token: String): Long {
+        println(parseToken(trimBearer(token))[STUDENT_SIGN])
+        return parseToken(trimBearer(token))[STUDENT_SIGN].toString().toLong()
+
+    }
+
+    private fun trimBearer(token: String): String {
+        return token.replace(BEARER_FORMAT, "")
+    }
+
+    private fun parseToken(token: String): Claims {
+        println(Jwts.parser()
+            .decryptWith(secretKey)
+            .build()
+            .parseEncryptedClaims(token)
+            .payload)
+        return Jwts.parser()
+            .decryptWith(secretKey)
+            .build()
+            .parseEncryptedClaims(token)
+            .payload
+            ?: throw IllegalArgumentException("Invalid token")
     }
 }
