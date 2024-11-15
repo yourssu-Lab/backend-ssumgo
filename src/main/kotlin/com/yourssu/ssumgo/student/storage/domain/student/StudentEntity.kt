@@ -55,7 +55,6 @@ class StudentEntity(
             department = department,
             studentIdNumber = studentIdNumber,
             profileImageUrls = profileImageUrls.toDomain(),
-            createdDate = createdDate,
         )
     }
 }
