@@ -1,0 +1,10 @@
+@serverUrl = localhost:8080
+
+@accessToken = eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..Y7MxbpaY4cFMg1p_.1oKBtCR3USVB8NV_zQQ69bc6aDgJby46sDVJKKe7xkrpow8h3WXiM9t_lwM.z3N43dS6RDSxeeOahoSf5w
+
+// 유저 정보 조회
+###
+GET {{serverUrl}}/students
+Authorization: Bearer {{accessToken}}
+
+###
