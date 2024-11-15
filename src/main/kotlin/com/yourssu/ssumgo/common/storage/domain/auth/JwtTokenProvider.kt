@@ -36,7 +36,6 @@ class JwtTokenProvider(
     }
 
     fun extractStudentId(token: String): Long {
-        println(parseToken(trimBearer(token))[STUDENT_SIGN])
         return parseToken(trimBearer(token))[STUDENT_SIGN].toString().toLong()
 
     }
