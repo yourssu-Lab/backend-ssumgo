@@ -18,7 +18,6 @@ import kotlin.test.assertEquals
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AuthServiceTest {
-
     @Autowired
     private lateinit var authService: AuthService
 
