@@ -11,5 +11,5 @@ class Subject(
     val department: String = "글로벌미디어학부",
     var time: Int,
     var credit: Int,
-): BaseDomain() {
+) {
 }
