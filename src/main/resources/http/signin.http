@@ -73,3 +73,10 @@ Content-Type: application/json
   "email": {{email}},
   "password": {{password}}
 }
+
+> {%
+    const responseBody = response.body;
+    client.log("accessToken: " + responseBody.accessToken);
+%}
+
+###
