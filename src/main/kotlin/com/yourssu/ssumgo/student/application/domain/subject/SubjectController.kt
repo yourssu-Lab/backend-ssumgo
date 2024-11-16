@@ -1,4 +1,4 @@
-package com.yourssu.ssumgo.student.application.domain.student
+package com.yourssu.ssumgo.student.application.domain.subject
 
 import com.yourssu.ssumgo.common.application.domain.common.Response
 import com.yourssu.ssumgo.common.implement.domain.auth.StudentId
