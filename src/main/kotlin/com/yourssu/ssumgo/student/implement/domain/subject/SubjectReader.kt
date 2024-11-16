@@ -14,6 +14,11 @@ class SubjectReader(
     }
 
     @Transactional(readOnly = true)
+    fun getSubject(subjectId: Long): Subject {
+        return subjectRepository.get(subjectId)
+    }
+
+    @Transactional(readOnly = true)
     fun getAllSubjects(): List<Subject> {
         return subjectRepository.getAllSubjects()
     }
