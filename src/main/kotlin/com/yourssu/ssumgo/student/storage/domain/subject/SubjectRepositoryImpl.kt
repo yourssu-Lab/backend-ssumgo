@@ -18,9 +18,9 @@ class SubjectRepositoryImpl(
         return subjectJpaRepository.findAll().map { it.toDomain() }
     }
 
-    fun get(id: Long): Subject {
-        return subjectJpaRepository.findById(id).orElseThrow { IllegalArgumentException("Subject not found") }
-            .toDomain()
+    override fun get(subjectId: Long): Subject {
+        return subjectJpaRepository.get(subjectId)?.toDomain()
+            ?: throw IllegalArgumentException("Subject not found")
     }
 }
 
