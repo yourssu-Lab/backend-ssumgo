@@ -14,36 +14,37 @@ class SubjectRepositoryImplTest {
     @Autowired
     private lateinit var subjectRepositoryImpl: SubjectRepositoryImpl
 
+    private val subjectFixture = Subject(
+        subjectName = "과목명",
+        professorName = "교수명",
+        completion = "이수구분",
+        subjectCode = 1234,
+        time = 1,
+        credit = 3,
+    )
+
     @Test
     fun save() {
-        val subject = Subject(
-            subjectName = "과목명",
-            professorName = "교수명",
-            completion = "이수구분",
-            subjectCode = 1234,
-            time = 1,
-            credit = 3,
-        )
+        val response = subjectRepositoryImpl.save(subjectFixture)
 
-        val response = subjectRepositoryImpl.save(subject)
-
-        assertEquals(subject.subjectCode, response.subjectCode)
+        assertEquals(subjectFixture.subjectCode, response.subjectCode)
     }
 
     @Test
     fun getAllSubjects() {
-        val subject = Subject(
-            subjectName = "과목명",
-            professorName = "교수명",
-            completion = "이수구분",
-            subjectCode = 1234,
-            time = 1,
-            credit = 3,
-        )
-        subjectRepositoryImpl.save(subject)
+        subjectRepositoryImpl.save(subjectFixture)
 
         val response = subjectRepositoryImpl.getAllSubjects()
 
         assertEquals(1, response.size)
+    }
+
+    @Test
+    fun get() {
+        val savedSubject = subjectRepositoryImpl.save(subjectFixture)
+
+        val response = subjectRepositoryImpl.get(savedSubject.id!!)
+
+        assertEquals(savedSubject.id, response.id)
     }
 }
