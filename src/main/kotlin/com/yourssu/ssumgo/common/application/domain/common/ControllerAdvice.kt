@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.common.application.domain.common
 
+import org.slf4j.LoggerFactory.getLogger
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -10,32 +11,42 @@ import java.time.format.DateTimeFormatter
 
 @ControllerAdvice
 class ControllerAdvice {
+    companion object {
+        private val logger = getLogger(ControllerAdvice::class.java)
+        private const val VALIDATION_DEFAULT_ERROR_MESSAGE = "Unknown validation error"
+        private const val INVALID_REQUEST_DELIMITER = ", "
+    }
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<ErrorResponse> {
+        logger.error(InternalServerErrorResponse().message, e)
         return ResponseEntity.internalServerError()
             .body(ErrorResponse.from(InternalServerErrorResponse()))
     }
 
     @ExceptionHandler(BadRequestErrorResponse::class)
     fun handleBadRequest(e: BadRequestErrorResponse): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
         return ResponseEntity.badRequest()
             .body(ErrorResponse.from(e))
     }
 
     @ExceptionHandler(NotFoundErrorResponse::class)
     fun handleNotFound(e: NotFoundErrorResponse): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.from(e))
     }
 
     @ExceptionHandler(UnauthorizedErrorResponse::class)
     fun handleUnauthorized(e: UnauthorizedErrorResponse): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(ErrorResponse.from(e))
     }
 
     @ExceptionHandler(ForbiddenErrorResponse::class)
     fun handleForbidden(e: ForbiddenErrorResponse): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
             .body(ErrorResponse.from(e))
     }
