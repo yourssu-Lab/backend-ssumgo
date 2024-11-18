@@ -56,9 +56,9 @@ class ControllerAdvice {
         bindingResult: MethodArgumentNotValidException
     ): ResponseEntity<ErrorResponse> {
         val errorMessage = bindingResult.fieldErrors
-            .map { it.defaultMessage ?: "Unknown validation error" }
-            .joinToString(", ") { "Invalid Input: [$it]" }
-
+            .map { it.defaultMessage ?: VALIDATION_DEFAULT_ERROR_MESSAGE }
+            .joinToString(INVALID_REQUEST_DELIMITER) { "Invalid Input: [$it]" }
+        logger.error(errorMessage, bindingResult)
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse(
                 status = HttpStatus.BAD_REQUEST.value(),
