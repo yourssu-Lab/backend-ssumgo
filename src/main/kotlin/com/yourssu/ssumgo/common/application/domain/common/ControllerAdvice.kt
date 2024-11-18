@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.common.application.domain.common
 
+import feign.FeignException
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -63,6 +64,18 @@ class ControllerAdvice {
             .body(ErrorResponse(
                 status = HttpStatus.BAD_REQUEST.value(),
                 message = errorMessage
+            ))
+    }
+
+    @ExceptionHandler
+    fun feignClientException(
+        e: FeignException.FeignClientException
+    ): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
+        return ResponseEntity.status(e.status())
+            .body(ErrorResponse(
+                status = e.status(),
+                message = "숨쉴때 API 호출 중 에러가 발생했습니다. {{ ${e.message} }}"
             ))
     }
 }
