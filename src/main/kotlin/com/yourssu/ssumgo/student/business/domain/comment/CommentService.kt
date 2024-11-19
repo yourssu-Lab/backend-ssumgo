@@ -27,23 +27,8 @@ class CommentService(
 
     fun findAllCommentsByMentee(command: CommentFoundBySubjectCommand): CommentsPageResponse {
         val subject = subjectReader.getSubject(command.subjectId)
-        val mentee = studentReader.getStudent(command.menteeId)
-        val commentsPage = commentReader.getAllByMentee(
+        val commentsPage = commentReader.getAllBySubject(
             subjectId = subject.id!!,
-            menteeId = mentee.id!!,
-            pageNumber = command.page,
-            pageSize = command.size,
-            sortBy = command.sortBy
-        )
-        return CommentsPageResponse.from(commentsPage)
-    }
-
-    fun findAllCommentsByNotMentee(command: CommentFoundBySubjectCommand): CommentsPageResponse {
-        val subject = subjectReader.getSubject(command.subjectId)
-        val mentee = studentReader.getStudent(command.menteeId)
-        val commentsPage = commentReader.getAllByNotMentee(
-            subjectId = subject.id!!,
-            menteeId = mentee.id!!,
             pageNumber = command.page,
             pageSize = command.size,
             sortBy = command.sortBy

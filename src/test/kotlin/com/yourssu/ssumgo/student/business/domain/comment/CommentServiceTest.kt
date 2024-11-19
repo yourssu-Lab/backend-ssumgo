@@ -66,15 +66,15 @@ class CommentServiceTest {
     }
 
     @Test
-    fun findAllCommentsByMentee() {
+    fun findAllCommentsBySubject() {
         val mentee = saveStudent("mentee")
         val mentor = saveStudent("mentor")
         val subject = saveSubject()
-        val posts = savePosts(mentee, subject)
-        val comment1 = saveComment(mentor, posts)
-        val comment2 = saveComment(mentor, posts)
+        val posts1 = savePosts(mentee, subject)
+        val posts2 = savePosts(mentee, subject)
+        val comment1 = saveComment(mentor, posts1)
+        val comment2 = saveComment(mentor, posts2)
         val command = CommentFoundBySubjectCommand(
-            menteeId = mentee.id!!,
             subjectId = subject.id!!,
             page = 1,
             sortBy = SortBy.LATEST,
@@ -83,32 +83,6 @@ class CommentServiceTest {
 
         //when
         val response = commentService.findAllCommentsByMentee(command)
-
-        //then
-        assertEquals(2, response.totalCount)
-    }
-
-    @Test
-    fun findAllCommentsByNotMentee() {
-        val mentee = saveStudent("mentee")
-        val otherMentee = saveStudent("otherMentee")
-        val mentor = saveStudent("mentor")
-        val subject = saveSubject()
-        val posts = savePosts(mentee, subject)
-        val otherPosts = savePosts(otherMentee, subject)
-        val comment1 = saveComment(mentor, posts)
-        val comment2 = saveComment(mentor, otherPosts)
-        val comment3 = saveComment(mentor, otherPosts)
-        val command = CommentFoundBySubjectCommand(
-            menteeId = mentee.id!!,
-            subjectId = subject.id!!,
-            page = 1,
-            sortBy = SortBy.LATEST,
-            size = 10,
-        )
-
-        //when
-        val response = commentService.findAllCommentsByNotMentee(command)
 
         //then
         assertEquals(2, response.totalCount)
