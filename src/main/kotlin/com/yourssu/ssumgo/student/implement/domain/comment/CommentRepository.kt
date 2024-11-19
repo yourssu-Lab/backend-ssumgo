@@ -26,4 +26,6 @@ interface CommentRepository {
         pageSize: Int,
         sortBy: SortBy
     ): CommentsPage
+
+    fun findAllByMentee2(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage
 }

@@ -64,6 +64,14 @@ class CommentRepositoryImpl(
             )
         return CommentsPage.from(comments)
     }
+
+    override fun findAllByMentee2(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
+        val comments = commentJpaRepository.findAllByMentee2(
+            menteeId = menteeId,
+            pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
+        )
+        return CommentsPage.from(comments)
+    }
 }
 
 data class CommentsPage(
@@ -96,6 +104,9 @@ interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
 
     @Query("select (count(c) > 0) from CommentEntity c where c.posts = ?1")
     fun existsByPosts(posts: PostsEntity): Boolean
+
+    @Query("select c from CommentEntity c where c.posts.mentee.id = :menteeId")
+    fun findAllByMentee2(menteeId: Long, pageable: PageRequest): Page<CommentEntity>
 }
 
 class CommentNotFoundException : NotFoundException(message = "해당하는 댓글이 없습니다.")
