@@ -1,6 +1,23 @@
 @serverUrl = localhost:8080
 
-@accessToken = eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..Y7MxbpaY4cFMg1p_.1oKBtCR3USVB8NV_zQQ69bc6aDgJby46sDVJKKe7xkrpow8h3WXiM9t_lwM.z3N43dS6RDSxeeOahoSf5w
+@email = "nggus5@soongsil.ac.kr"
+@password = "leopassword123123"
+
+// 숭실숨고 로그인 요청
+###
+POST {{serverUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": {{email}},
+  "password": {{password}}
+}
+
+> {%
+    const responseBody = response.body;
+    client.log("accessToken: " + responseBody.accessToken);
+%}
+###
 
 // 유저 정보 조회
 ###
