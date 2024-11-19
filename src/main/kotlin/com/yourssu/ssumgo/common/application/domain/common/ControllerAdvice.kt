@@ -19,34 +19,34 @@ class ControllerAdvice {
     }
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<ErrorResponse> {
-        logger.error(InternalServerErrorResponse().message, e)
+        logger.error(InternalServerError().message, e)
         return ResponseEntity.internalServerError()
-            .body(ErrorResponse.from(InternalServerErrorResponse()))
+            .body(ErrorResponse.from(InternalServerError()))
     }
 
-    @ExceptionHandler(BadRequestErrorResponse::class)
-    fun handleBadRequest(e: BadRequestErrorResponse): ResponseEntity<ErrorResponse> {
+    @ExceptionHandler(BadRequestException::class)
+    fun handleBadRequest(e: BadRequestException): ResponseEntity<ErrorResponse> {
         logger.error(e.message, e)
         return ResponseEntity.badRequest()
             .body(ErrorResponse.from(e))
     }
 
-    @ExceptionHandler(NotFoundErrorResponse::class)
-    fun handleNotFound(e: NotFoundErrorResponse): ResponseEntity<ErrorResponse> {
+    @ExceptionHandler(NotFoundException::class)
+    fun handleNotFound(e: NotFoundException): ResponseEntity<ErrorResponse> {
         logger.error(e.message, e)
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.from(e))
     }
 
-    @ExceptionHandler(UnauthorizedErrorResponse::class)
-    fun handleUnauthorized(e: UnauthorizedErrorResponse): ResponseEntity<ErrorResponse> {
+    @ExceptionHandler(UnauthorizedException::class)
+    fun handleUnauthorized(e: UnauthorizedException): ResponseEntity<ErrorResponse> {
         logger.error(e.message, e)
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(ErrorResponse.from(e))
     }
 
-    @ExceptionHandler(ForbiddenErrorResponse::class)
-    fun handleForbidden(e: ForbiddenErrorResponse): ResponseEntity<ErrorResponse> {
+    @ExceptionHandler(ForbiddenException::class)
+    fun handleForbidden(e: ForbiddenException): ResponseEntity<ErrorResponse> {
         logger.error(e.message, e)
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
             .body(ErrorResponse.from(e))
@@ -100,31 +100,31 @@ abstract class Error(
     override val message: String
 ) : Exception()
 
-open class InternalServerErrorResponse(
+open class InternalServerError(
     status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
     message: String = "알 수 없는 에러가 발생했습니다."
 ) : Error(status, message) {
 }
 
-open class BadRequestErrorResponse(
+open class BadRequestException(
     status: HttpStatus = HttpStatus.BAD_REQUEST,
     message: String = "잘못된 요청입니다.",
 ) : Error(status, message) {
 }
 
-open class NotFoundErrorResponse(
+open class NotFoundException(
     status: HttpStatus = HttpStatus.NOT_FOUND,
     message: String = "존재하지 않는 리소스입니다.",
 ) : Error(status, message) {
 }
 
-open class UnauthorizedErrorResponse(
+open class UnauthorizedException(
     status: HttpStatus = HttpStatus.UNAUTHORIZED,
     message: String = "인증되지 않은 사용자입니다.",
 ) : Error(status, message) {
 }
 
-open class ForbiddenErrorResponse(
+open class ForbiddenException(
     status: HttpStatus = HttpStatus.FORBIDDEN,
     message: String = "권한이 없습니다.",
 ) : Error(status, message) {
