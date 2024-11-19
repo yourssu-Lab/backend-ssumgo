@@ -14,11 +14,21 @@ class PostsReader(
     }
 
     @Transactional(readOnly = true)
-    fun findAllPosts(subjectId: Long, pageNumber: Int, sortBy: SortBy = SortBy.LATEST, size: Int): PostsPage {
+    fun findAllPostsBySubject(subjectId: Long, pageNumber: Int, sortBy: SortBy = SortBy.LATEST, size: Int): PostsPage {
         return postsRepository.findAllBySubjectId(
             subjectId = subjectId,
             pageNumber = pageNumber - 1,
             pageSize = size,
+            sortBy = sortBy
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun findAllPostsByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): PostsPage {
+        return postsRepository.findAllByMenteeId(
+            menteeId = menteeId,
+            pageNumber = pageNumber - 1,
+            pageSize = pageSize,
             sortBy = sortBy
         )
     }

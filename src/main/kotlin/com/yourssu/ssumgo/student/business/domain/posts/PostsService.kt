@@ -25,7 +25,7 @@ class PostsService(
 
     fun findAllPostsBySubjectId(command: PostsFoundBySubjectCommand): PostsPageResponse {
         val subject = subjectReader.getSubject(command.subjectId)
-        val postsPage = postsReader.findAllPosts(
+        val postsPage = postsReader.findAllPostsBySubject(
             subjectId = subject.id!!,
             pageNumber = command.page,
             sortBy = command.sortBy,

@@ -3,7 +3,9 @@ package com.yourssu.ssumgo.student.application.domain.student
 import com.yourssu.ssumgo.common.application.domain.common.Response
 import com.yourssu.ssumgo.common.implement.domain.auth.StudentId
 import com.yourssu.ssumgo.student.business.domain.comment.CommentsPageResponse
+import com.yourssu.ssumgo.student.business.domain.posts.PostsPageResponse
 import com.yourssu.ssumgo.student.business.domain.student.CommentFoundByMenteeCommand
+import com.yourssu.ssumgo.student.business.domain.student.PostsFoundByMenteeCommand
 import com.yourssu.ssumgo.student.business.domain.student.StudentResponse
 import com.yourssu.ssumgo.student.business.domain.student.StudentService
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
@@ -23,7 +25,7 @@ class StudentController(
     }
 
     @GetMapping("/comments")
-    fun getCommentsEtcBySubject(
+    fun getCommentsByMentee(
         @StudentId menteeId: Long,
         @Positive @RequestParam(defaultValue = "1") page: Int,
         @NotBlank @RequestParam(defaultValue = "latest") sortBy: String,
@@ -36,6 +38,23 @@ class StudentController(
             size = size,
         )
         val response = studentService.findAllCommentsByMentee(command)
+        return ResponseEntity.ok(Response(result = response))
+    }
+
+    @GetMapping("/posts")
+    fun getPostsByMentee(
+        @StudentId menteeId: Long,
+        @Positive @RequestParam(defaultValue = "1") page: Int,
+        @NotBlank @RequestParam(defaultValue = "latest") sortBy: String,
+        @Positive @RequestParam(defaultValue = "10") size: Int,
+    ): ResponseEntity<Response<PostsPageResponse>> {
+        val command = PostsFoundByMenteeCommand(
+            menteeId = menteeId,
+            page = page,
+            sortBy = SortBy.of(sortBy),
+            size = size,
+        )
+        val response = studentService.findAllPostsByMentee(command)
         return ResponseEntity.ok(Response(result = response))
     }
 }
