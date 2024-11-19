@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.common.storage.domain.auth
 
+import com.yourssu.ssumgo.common.application.domain.common.BadRequestException
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import org.springframework.beans.factory.annotation.Value
@@ -42,7 +43,7 @@ class JwtTokenProvider(
 
     private fun trimBearer(token: String): String {
         if (!token.startsWith(BEARER_FORMAT)) {
-            throw IllegalArgumentException("Invalid token: No Bearer")
+            throw UnAuthorizedTokenException()
         }
         return token.replace(BEARER_FORMAT, "")
     }
@@ -58,6 +59,8 @@ class JwtTokenProvider(
             .build()
             .parseEncryptedClaims(token)
             .payload
-            ?: throw IllegalArgumentException("Invalid token")
+            ?: throw UnAuthorizedTokenException()
     }
 }
+
+class UnAuthorizedTokenException : BadRequestException(message = "유효하지 않은 토큰입니다.(Bearer *)")

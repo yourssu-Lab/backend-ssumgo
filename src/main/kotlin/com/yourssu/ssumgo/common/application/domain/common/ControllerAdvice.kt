@@ -1,12 +1,15 @@
 package com.yourssu.ssumgo.common.application.domain.common
 
-import feign.FeignException
+import feign.FeignException.FeignClientException
+import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory.getLogger
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -52,7 +55,7 @@ class ControllerAdvice {
             .body(ErrorResponse.from(e))
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidException(
         bindingResult: MethodArgumentNotValidException
     ): ResponseEntity<ErrorResponse> {
@@ -67,15 +70,51 @@ class ControllerAdvice {
             ))
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(ConstraintViolationException::class)
+    fun handleValidateException(
+        e: ConstraintViolationException
+    ): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(
+                status = HttpStatus.BAD_REQUEST.value(),
+                message = e.message ?: VALIDATION_DEFAULT_ERROR_MESSAGE
+            ))
+    }
+
+    @ExceptionHandler(FeignClientException::class)
     fun feignClientException(
-        e: FeignException.FeignClientException
+        e: FeignClientException
     ): ResponseEntity<ErrorResponse> {
         logger.error(e.message, e)
         return ResponseEntity.status(e.status())
             .body(ErrorResponse(
                 status = e.status(),
                 message = "숨쉴때 API 호출 중 에러가 발생했습니다. {{ ${e.message} }}"
+            ))
+    }
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun noResourceFoundException(
+        e: NoResourceFoundException
+    ): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
+        return ResponseEntity.status(e.statusCode)
+            .body(ErrorResponse(
+                status = e.statusCode.value(),
+                message = "올바르지 않은 경로입니다. {{ {baseUrl}/${e.resourcePath} }}"
+            ))
+    }
+
+    @ExceptionHandler(DuplicateKeyException::class)
+    fun handleDuplicateKeyException(
+        e: DuplicateKeyException
+    ): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(ErrorResponse(
+                status = HttpStatus.CONFLICT.value(),
+                message = "중복된 아이디가 존재합니다. {{ ${e.message} }}"
             ))
     }
 }

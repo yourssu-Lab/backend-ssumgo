@@ -20,11 +20,13 @@ data class UserResponse(
 ) {
     fun toDomain(): Student {
         return Student(
-            yourssuId = email.replace("@yourssu.com", ""),
+            yourssuId = toYourssuId(email),
             nickname = nickName,
             profileImageUrls = profileImage.toDomain()
         )
     }
+
+    private fun toYourssuId(email: String) = email.replace("@yourssu.com", "")
 }
 
 data class ProfileImageUrlsResponse(
