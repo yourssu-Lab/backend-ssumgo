@@ -1,6 +1,6 @@
 package com.yourssu.ssumgo.common.storage.domain.auth
 
-import com.yourssu.ssumgo.common.application.domain.common.BadRequestException
+import com.yourssu.ssumgo.common.application.domain.common.UnauthorizedException
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import org.springframework.beans.factory.annotation.Value
@@ -63,4 +63,4 @@ class JwtTokenProvider(
     }
 }
 
-class UnAuthorizedTokenException : BadRequestException(message = "유효하지 않은 토큰입니다.(Bearer *)")
+class UnAuthorizedTokenException : UnauthorizedException(message = "유효하지 않은 토큰입니다.(Bearer *)")
