@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.common.business.domain.auth
 
+import com.yourssu.ssumgo.common.application.domain.common.BadRequestException
 import com.yourssu.ssumgo.common.implement.domain.auth.StudentId
 import com.yourssu.ssumgo.common.implement.domain.auth.AccessTokenExtractor
 import jakarta.servlet.http.HttpServletRequest
@@ -29,9 +30,11 @@ class AuthStudentArgumentResolver(
         val request = webRequest.getNativeRequest(HttpServletRequest::class.java)
         val token = request?.getHeader(HttpHeaders.AUTHORIZATION)
         if (token.isNullOrBlank()) {
-            throw IllegalArgumentException("Authorization header is missing")
+            throw InvalidTokenException()
         }
 
         return accessTokenExtractor.extractStudentId(token)
     }
 }
+
+class InvalidTokenException : BadRequestException(message = "Authorization 헤더에 토큰이 없습니다.")

@@ -32,11 +32,6 @@ class StudentSubjectRepositoryImpl(
         )
         return studentSubjectEntity.id!!
     }
-
-    fun getSubject(id: Long): StudentSubjectEntity {
-        return studentSubjectJpaRepository.get(id)
-            ?: throw IllegalArgumentException("해당하는 수강과목이 없습니다.")
-    }
 }
 
 interface StudentSubjectJpaRepository : JpaRepository<StudentSubjectEntity, Long> {

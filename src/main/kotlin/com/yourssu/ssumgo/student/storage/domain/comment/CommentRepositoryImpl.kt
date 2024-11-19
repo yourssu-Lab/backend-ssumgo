@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.student.storage.domain.comment
 
+import com.yourssu.ssumgo.common.application.domain.common.NotFoundException
 import com.yourssu.ssumgo.student.implement.domain.comment.Comment
 import com.yourssu.ssumgo.student.implement.domain.comment.CommentRepository
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
@@ -20,7 +21,7 @@ class CommentRepositoryImpl(
 
     override fun get(postId: Long, commentId: Long): Comment {
         return commentJpaRepository.get(postId = postId, commentId = commentId)?.toDomain()
-            ?: throw IllegalArgumentException("해당하는 댓글이 없습니다.")
+            ?: throw CommentNotFoundException()
     }
 
     override fun findAllByMentee(
@@ -86,3 +87,5 @@ interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
     @Query("select c from CommentEntity c where c.posts.subject.id = :subjectId and c.posts.mentee.id != :menteeId")
     fun findAllByExceptedMentee(subjectId: Long, menteeId: Long, pageable: Pageable): Page<CommentEntity>
 }
+
+class CommentNotFoundException : NotFoundException(message = "해당하는 댓글이 없습니다.")

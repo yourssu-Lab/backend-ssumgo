@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.student.storage.domain.posts
 
+import com.yourssu.ssumgo.common.application.domain.common.NotFoundException
 import com.yourssu.ssumgo.student.implement.domain.posts.Posts
 import com.yourssu.ssumgo.student.implement.domain.posts.PostsRepository
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
@@ -20,7 +21,7 @@ class PostsRepositoryImpl(
 
     override fun get(id: Long): Posts {
         return postsJpaRepository.get(id)?.toDomain()
-            ?: throw IllegalArgumentException("해당하는 게시글이 없습니다.")
+            ?: throw PostsNotFoundException()
     }
 
     override fun findAllBySubjectId(subjectId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): PostsPage {
@@ -59,3 +60,5 @@ interface PostsJpaRepository : JpaRepository<PostsEntity, Long> {
     @Query("SELECT p FROM PostsEntity p WHERE p.id = :id")
     fun get(id: Long): PostsEntity?
 }
+
+class PostsNotFoundException : NotFoundException(message = "해당하는 게시글이 없습니다.")
