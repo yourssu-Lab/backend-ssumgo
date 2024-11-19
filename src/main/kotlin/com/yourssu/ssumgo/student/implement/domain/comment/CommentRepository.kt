@@ -11,21 +11,12 @@ interface CommentRepository {
 
     fun existsComment(posts: Posts): Boolean
 
-    fun findAllByMentee(
+    fun findAllBySubject(
         subjectId: Long,
-        menteeId: Long,
         pageNumber: Int,
         pageSize: Int,
         sortBy: SortBy
     ): CommentsPage
 
-    fun findAllByNotMentee(
-        subjectId: Long,
-        menteeId: Long,
-        pageNumber: Int,
-        pageSize: Int,
-        sortBy: SortBy
-    ): CommentsPage
-
-    fun findAllByMentee2(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage
+    fun findAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage
 }

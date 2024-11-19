@@ -18,7 +18,7 @@ class StudentService(
 
     fun findAllCommentsByMentee(command: CommentFoundByMenteeCommand): CommentsPageResponse {
         val mentee = studentReader.getStudent(command.menteeId)
-        val commentsPage = commentReader.getAllByMentee2(
+        val commentsPage = commentReader.getAllByMentee(
             menteeId = mentee.id!!,
             pageNumber = command.page,
             pageSize = command.size,

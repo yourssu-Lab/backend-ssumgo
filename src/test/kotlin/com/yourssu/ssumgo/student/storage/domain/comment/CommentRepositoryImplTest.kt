@@ -81,9 +81,8 @@ class CommentRepositoryImplTest {
         val comment2 = saveComment(mentor, posts)
 
         // when
-        val response = commentRepository.findAllByMentee(
+        val response = commentRepository.findAllBySubject(
             subjectId = subject.id!!,
-            menteeId = mentee.id!!,
             pageNumber = 0,
             pageSize = 10,
             sortBy = SortBy.LATEST
@@ -91,33 +90,6 @@ class CommentRepositoryImplTest {
 
         // then
         assertEquals(2, response.content.size)
-    }
-
-    @Test
-    @Transactional
-    fun findAllByNotMentee() {
-        // given
-        val mentee = saveStudent()
-        val mentor = saveStudent("mentor")
-        val otherMentee = saveStudent("otherMentee")
-        val subject = saveSubject()
-        val posts = savePosts(mentee, subject)
-        val postsOther = savePosts(otherMentee, subject)
-        val comment1 = saveComment(mentor, posts)
-        val comment2 = saveComment(mentor, posts)
-        val comment3 = saveComment(mentor, postsOther)
-
-        // when
-        val response = commentRepository.findAllByNotMentee(
-            subjectId = subject.id!!,
-            menteeId = mentee.id!!,
-            pageNumber = 0,
-            pageSize = 10,
-            sortBy = SortBy.LATEST
-        )
-
-        // then
-        assertEquals(1, response.content.size)
     }
 
     private fun saveComment(

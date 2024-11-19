@@ -31,9 +31,8 @@ class CommentRepositoryImpl(
     }
 
 
-    override fun findAllByMentee(
+    override fun findAllBySubject(
         subjectId: Long,
-        menteeId: Long,
         pageNumber: Int,
         pageSize: Int,
         sortBy: SortBy
@@ -42,30 +41,12 @@ class CommentRepositoryImpl(
         val comments =
             commentJpaRepository.findAllByPostsIdAndMenteeId(
                 subjectId = subjectId,
-                menteeId = menteeId,
                 pageable = pageable
             )
         return CommentsPage.from(comments)
     }
 
-    override fun findAllByNotMentee(
-        subjectId: Long,
-        menteeId: Long,
-        pageNumber: Int,
-        pageSize: Int,
-        sortBy: SortBy
-    ): CommentsPage {
-        val pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
-        val comments =
-            commentJpaRepository.findAllByExceptedMentee(
-                subjectId = subjectId,
-                menteeId = menteeId,
-                pageable = pageable
-            )
-        return CommentsPage.from(comments)
-    }
-
-    override fun findAllByMentee2(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
+    override fun findAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
         val comments = commentJpaRepository.findAllByMentee2(
             menteeId = menteeId,
             pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
@@ -96,11 +77,8 @@ interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
     @Query("select c from CommentEntity c where c.posts.id = :postId and c.id = :commentId")
     fun get(postId: Long, commentId: Long): CommentEntity?
 
-    @Query("select c from CommentEntity c where c.posts.subject.id = :subjectId and c.posts.mentee.id = :menteeId")
-    fun findAllByPostsIdAndMenteeId(subjectId: Long, menteeId: Long, pageable: Pageable): Page<CommentEntity>
-
-    @Query("select c from CommentEntity c where c.posts.subject.id = :subjectId and c.posts.mentee.id != :menteeId")
-    fun findAllByExceptedMentee(subjectId: Long, menteeId: Long, pageable: Pageable): Page<CommentEntity>
+    @Query("select c from CommentEntity c where c.posts.subject.id = :subjectId")
+    fun findAllByPostsIdAndMenteeId(subjectId: Long, pageable: Pageable): Page<CommentEntity>
 
     @Query("select (count(c) > 0) from CommentEntity c where c.posts = ?1")
     fun existsByPosts(posts: PostsEntity): Boolean

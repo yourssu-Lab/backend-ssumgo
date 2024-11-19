@@ -38,39 +38,18 @@ class SubjectController(
 
     @GetMapping("/{subjectId}/comments")
     fun getCommentsBySubject(
-        @StudentId menteeId: Long,
         @Positive @PathVariable subjectId: Long,
         @Positive @RequestParam(defaultValue = "1") page: Int,
         @NotBlank @RequestParam(defaultValue = "latest") sortBy: String,
         @Positive @RequestParam(defaultValue = "10") size: Int,
     ): ResponseEntity<Response<CommentsPageResponse>> {
         val command = CommentFoundBySubjectCommand(
-            menteeId = menteeId,
             subjectId = subjectId,
             page = page,
             sortBy = SortBy.of(sortBy),
             size = size,
         )
         val response = commentService.findAllCommentsByMentee(command)
-        return ResponseEntity.ok(Response(result = response))
-    }
-
-    @GetMapping("/{subjectId}/comments/etc")
-    fun getCommentsEtcBySubject(
-        @StudentId menteeId: Long,
-        @Positive @PathVariable subjectId: Long,
-        @Positive @RequestParam(defaultValue = "1") page: Int,
-        @NotBlank @RequestParam(defaultValue = "latest") sortBy: String,
-        @Positive @RequestParam(defaultValue = "10") size: Int,
-    ): ResponseEntity<Response<CommentsPageResponse>> {
-        val command = CommentFoundBySubjectCommand(
-            menteeId = menteeId,
-            subjectId = subjectId,
-            page = page,
-            sortBy = SortBy.of(sortBy),
-            size = size,
-        )
-        val response = commentService.findAllCommentsByNotMentee(command)
         return ResponseEntity.ok(Response(result = response))
     }
 }

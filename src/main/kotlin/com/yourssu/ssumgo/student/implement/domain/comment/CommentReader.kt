@@ -15,30 +15,18 @@ class CommentReader(
     }
 
     @Transactional(readOnly = true)
-    fun getAllByMentee(subjectId: Long, menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
+    fun getAllBySubject(subjectId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
+        return commentRepository.findAllBySubject(
+            subjectId = subjectId,
+            pageNumber = pageNumber - 1,
+            pageSize = pageSize,
+            sortBy = sortBy
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun getAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
         return commentRepository.findAllByMentee(
-            subjectId = subjectId,
-            menteeId = menteeId,
-            pageNumber = pageNumber - 1,
-            pageSize = pageSize,
-            sortBy = sortBy
-        )
-    }
-
-    @Transactional(readOnly = true)
-    fun getAllByMentee2(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
-        return commentRepository.findAllByMentee2(
-            menteeId = menteeId,
-            pageNumber = pageNumber - 1,
-            pageSize = pageSize,
-            sortBy = sortBy
-        )
-    }
-
-    @Transactional(readOnly = true)
-    fun getAllByNotMentee(subjectId: Long, menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
-        return commentRepository.findAllByNotMentee(
-            subjectId = subjectId,
             menteeId = menteeId,
             pageNumber = pageNumber - 1,
             pageSize = pageSize,
