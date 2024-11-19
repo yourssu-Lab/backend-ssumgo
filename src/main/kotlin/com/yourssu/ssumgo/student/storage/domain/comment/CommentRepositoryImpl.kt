@@ -3,7 +3,9 @@ package com.yourssu.ssumgo.student.storage.domain.comment
 import com.yourssu.ssumgo.common.application.domain.common.NotFoundException
 import com.yourssu.ssumgo.student.implement.domain.comment.Comment
 import com.yourssu.ssumgo.student.implement.domain.comment.CommentRepository
+import com.yourssu.ssumgo.student.implement.domain.posts.Posts
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
+import com.yourssu.ssumgo.student.storage.domain.posts.PostsEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -23,6 +25,11 @@ class CommentRepositoryImpl(
         return commentJpaRepository.get(postId = postId, commentId = commentId)?.toDomain()
             ?: throw CommentNotFoundException()
     }
+
+    override fun existsComment(posts: Posts): Boolean {
+        return commentJpaRepository.existsByPosts(PostsEntity.toEntity(posts))
+    }
+
 
     override fun findAllByMentee(
         subjectId: Long,
@@ -86,6 +93,9 @@ interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
 
     @Query("select c from CommentEntity c where c.posts.subject.id = :subjectId and c.posts.mentee.id != :menteeId")
     fun findAllByExceptedMentee(subjectId: Long, menteeId: Long, pageable: Pageable): Page<CommentEntity>
+
+    @Query("select (count(c) > 0) from CommentEntity c where c.posts = ?1")
+    fun existsByPosts(posts: PostsEntity): Boolean
 }
 
 class CommentNotFoundException : NotFoundException(message = "해당하는 댓글이 없습니다.")
