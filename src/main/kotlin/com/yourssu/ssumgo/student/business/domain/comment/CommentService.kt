@@ -4,6 +4,7 @@ import com.yourssu.ssumgo.student.implement.domain.comment.CommentReader
 import com.yourssu.ssumgo.student.implement.domain.comment.CommentWriter
 import com.yourssu.ssumgo.student.implement.domain.posts.PostsReader
 import com.yourssu.ssumgo.student.implement.domain.student.StudentReader
+import com.yourssu.ssumgo.student.implement.domain.subject.SubjectReader
 import org.springframework.stereotype.Service
 
 @Service
@@ -12,6 +13,7 @@ class CommentService(
     private val commentWriter: CommentWriter,
     private val postsReader: PostsReader,
     private val studentReader: StudentReader,
+    private val subjectReader: SubjectReader,
 ) {
     fun saveComment(command: CommentCreatedCommand): CommentResponse {
         val mentor = studentReader.getStudent(command.mentorId)
@@ -24,9 +26,11 @@ class CommentService(
     }
 
     fun findAllCommentsByMentee(command: CommentFoundBySubjectCommand): CommentsPageResponse {
+        val subject = subjectReader.getSubject(command.subjectId)
+        val mentee = studentReader.getStudent(command.menteeId)
         val commentsPage = commentReader.getAllByMentee(
-            subjectId = command.subjectId,
-            menteeId = command.menteeId,
+            subjectId = subject.id!!,
+            menteeId = mentee.id!!,
             pageNumber = command.page,
             pageSize = command.size,
             sortBy = command.sortBy
@@ -35,9 +39,11 @@ class CommentService(
     }
 
     fun findAllCommentsByNotMentee(command: CommentFoundBySubjectCommand): CommentsPageResponse {
+        val subject = subjectReader.getSubject(command.subjectId)
+        val mentee = studentReader.getStudent(command.menteeId)
         val commentsPage = commentReader.getAllByNotMentee(
-            subjectId = command.subjectId,
-            menteeId = command.menteeId,
+            subjectId = subject.id!!,
+            menteeId = mentee.id!!,
             pageNumber = command.page,
             pageSize = command.size,
             sortBy = command.sortBy
