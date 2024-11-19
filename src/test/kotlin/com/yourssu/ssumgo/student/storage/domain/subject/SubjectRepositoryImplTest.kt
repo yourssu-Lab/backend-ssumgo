@@ -2,6 +2,7 @@ package com.yourssu.ssumgo.student.storage.domain.subject
 
 import com.yourssu.ssumgo.student.implement.domain.subject.Subject
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
@@ -20,6 +21,7 @@ class SubjectRepositoryImplTest {
         completion = "이수구분",
         subjectCode = 1234,
         time = 1,
+        department = "학과",
         credit = 3,
     )
 
@@ -28,6 +30,15 @@ class SubjectRepositoryImplTest {
         val response = subjectRepositoryImpl.save(subjectFixture)
 
         assertEquals(subjectFixture.subjectCode, response.subjectCode)
+    }
+
+    @Test
+    fun saveDuplication() {
+        subjectRepositoryImpl.save(subjectFixture)
+
+        assertThrows<SubjectAlreadyExistsException> {
+            subjectRepositoryImpl.save(subjectFixture)
+        }
     }
 
     @Test
