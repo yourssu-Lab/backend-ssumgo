@@ -1,7 +1,9 @@
 package com.yourssu.ssumgo.student.business.domain.student
 
 import com.yourssu.ssumgo.student.business.domain.comment.CommentsPageResponse
+import com.yourssu.ssumgo.student.business.domain.posts.PostsPageResponse
 import com.yourssu.ssumgo.student.implement.domain.comment.CommentReader
+import com.yourssu.ssumgo.student.implement.domain.posts.PostsReader
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
 import com.yourssu.ssumgo.student.implement.domain.student.StudentReader
 import org.springframework.stereotype.Service
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service
 @Service
 class StudentService(
     private val studentReader: StudentReader,
+    private val postsReader: PostsReader,
     private val commentReader: CommentReader,
 ) {
     fun getStudent(studentId: Long): StudentResponse {
@@ -26,9 +29,27 @@ class StudentService(
         )
         return CommentsPageResponse.from(commentsPage)
     }
+
+    fun findAllPostsByMentee(command: PostsFoundByMenteeCommand): PostsPageResponse {
+        val mentee = studentReader.getStudent(command.menteeId)
+        val postsPage = postsReader.findAllPostsByMentee(
+            menteeId = mentee.id!!,
+            pageNumber = command.page,
+            pageSize = command.size,
+            sortBy = command.sortBy,
+        )
+        return PostsPageResponse.from(postsPage)
+    }
 }
 
 data class CommentFoundByMenteeCommand(
+    val menteeId: Long,
+    val page: Int,
+    val sortBy: SortBy,
+    val size: Int,
+)
+
+data class PostsFoundByMenteeCommand(
     val menteeId: Long,
     val page: Int,
     val sortBy: SortBy,

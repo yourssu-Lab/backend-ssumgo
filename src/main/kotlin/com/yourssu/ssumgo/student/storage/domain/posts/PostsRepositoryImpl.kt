@@ -28,6 +28,11 @@ class PostsRepositoryImpl(
         val pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
         return PostsPage.from(postsJpaRepository.findAllBySubjectId(subjectId = subjectId, pageable = pageable))
     }
+
+    override fun findAllByMenteeId(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): PostsPage {
+        val pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
+        return PostsPage.from(postsJpaRepository.findAllByMenteeId(menteeId = menteeId, pageable = pageable))
+    }
 }
 
 data class PostsPage(
@@ -57,8 +62,18 @@ interface PostsJpaRepository : JpaRepository<PostsEntity, Long> {
     )
     fun findAllBySubjectId(subjectId: Long, pageable: Pageable): Page<PostsEntity>
 
+    @Query(
+        value = "SELECT p FROM PostsEntity p " +
+                "JOIN FETCH p.mentee " +
+                "WHERE p.mentee.id = :menteeId",
+        countQuery = "SELECT COUNT(p) FROM PostsEntity p WHERE p.mentee.id = :menteeId"
+    )
+    fun findAllByMenteeId(menteeId: Long, pageable: Pageable): Page<PostsEntity>
+
     @Query("SELECT p FROM PostsEntity p WHERE p.id = :id")
     fun get(id: Long): PostsEntity?
+
+
 }
 
 class PostsNotFoundException : NotFoundException(message = "해당하는 게시글이 없습니다.")

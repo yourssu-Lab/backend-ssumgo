@@ -39,7 +39,7 @@ class CommentRepositoryImpl(
     ): CommentsPage {
         val pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
         val comments =
-            commentJpaRepository.findAllByPostsIdAndMenteeId(
+            commentJpaRepository.findAllBySubjectId(
                 subjectId = subjectId,
                 pageable = pageable
             )
@@ -47,7 +47,7 @@ class CommentRepositoryImpl(
     }
 
     override fun findAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
-        val comments = commentJpaRepository.findAllByMentee2(
+        val comments = commentJpaRepository.findAllByMenteeId(
             menteeId = menteeId,
             pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
         )
@@ -77,14 +77,24 @@ interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
     @Query("select c from CommentEntity c where c.posts.id = :postId and c.id = :commentId")
     fun get(postId: Long, commentId: Long): CommentEntity?
 
-    @Query("select c from CommentEntity c where c.posts.subject.id = :subjectId")
-    fun findAllByPostsIdAndMenteeId(subjectId: Long, pageable: Pageable): Page<CommentEntity>
+    @Query(
+        value = "SELECT c FROM CommentEntity c " +
+                "JOIN FETCH c.posts p " +
+                "WHERE p.subject.id = :subjectId",
+        countQuery = "SELECT COUNT(c) FROM CommentEntity c WHERE c.posts.subject.id = :subjectId"
+    )
+    fun findAllBySubjectId(subjectId: Long, pageable: Pageable): Page<CommentEntity>
 
     @Query("select (count(c) > 0) from CommentEntity c where c.posts = ?1")
     fun existsByPosts(posts: PostsEntity): Boolean
 
-    @Query("select c from CommentEntity c where c.posts.mentee.id = :menteeId")
-    fun findAllByMentee2(menteeId: Long, pageable: PageRequest): Page<CommentEntity>
+    @Query(
+        value = "SELECT c FROM CommentEntity c " +
+                "JOIN FETCH c.posts p " +
+                "WHERE p.mentee.id = :menteeId",
+        countQuery = "SELECT COUNT(c) FROM CommentEntity c WHERE c.posts.mentee.id = :menteeId"
+    )
+    fun findAllByMenteeId(menteeId: Long, pageable: Pageable): Page<CommentEntity>
 }
 
 class CommentNotFoundException : NotFoundException(message = "해당하는 댓글이 없습니다.")
