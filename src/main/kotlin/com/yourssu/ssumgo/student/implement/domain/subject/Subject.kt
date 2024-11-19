@@ -6,7 +6,7 @@ class Subject(
     val professorName: String,
     val completion: String,
     val subjectCode: Int,
-    val department: String = "글로벌미디어학부",
+    val department: String,
     var time: Int,
     var credit: Int,
 ) {
