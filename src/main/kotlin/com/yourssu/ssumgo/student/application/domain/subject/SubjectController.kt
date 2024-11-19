@@ -5,9 +5,11 @@ import com.yourssu.ssumgo.common.implement.domain.auth.StudentId
 import com.yourssu.ssumgo.student.business.domain.comment.CommentFoundBySubjectCommand
 import com.yourssu.ssumgo.student.business.domain.comment.CommentService
 import com.yourssu.ssumgo.student.business.domain.comment.CommentsPageResponse
+import com.yourssu.ssumgo.student.business.domain.subject.SubjectCreatedCommand
 import com.yourssu.ssumgo.student.business.domain.subject.SubjectResponse
 import com.yourssu.ssumgo.student.business.domain.subject.SubjectService
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
+import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Positive
 import org.hibernate.validator.constraints.Range
@@ -22,6 +24,11 @@ class SubjectController(
     private val subjectService: SubjectService,
     private val commentService: CommentService,
 ) {
+    @PostMapping
+    fun createSubject(@Valid @RequestBody request: SubjectCreatedRequest): ResponseEntity<Response<SubjectResponse>> {
+        return ResponseEntity.ok(Response(result = subjectService.saveSubject(request.toCommand())))
+    }
+
     @GetMapping
     fun getSubjects(): ResponseEntity<Response<List<SubjectResponse>>> {
         return ResponseEntity.ok(Response(result = subjectService.getAllSubjects()))
@@ -52,4 +59,40 @@ class SubjectController(
         val response = commentService.findAllCommentsByMentee(command)
         return ResponseEntity.ok(Response(result = response))
     }
+}
+
+data class SubjectCreatedRequest(
+    @NotBlank
+    val subjectName: String,
+
+    @NotBlank
+    val professorName: String,
+
+    @NotBlank
+    val completion: String,
+
+    @Positive
+    val subjectCode: Int,
+
+    @NotBlank
+    val department: String,
+
+    @Positive
+    val time: Int,
+
+    @Positive
+    val credit: Int,
+) {
+    fun toCommand(): SubjectCreatedCommand {
+        return SubjectCreatedCommand(
+            subjectName = subjectName,
+            professorName = professorName,
+            completion = completion,
+            subjectCode = subjectCode,
+            department = department,
+            time = time,
+            credit = credit,
+        )
+    }
+
 }
