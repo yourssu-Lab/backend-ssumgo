@@ -49,11 +49,6 @@ class JwtTokenProvider(
     }
 
     private fun parseToken(token: String): Claims {
-        println(Jwts.parser()
-            .decryptWith(secretKey)
-            .build()
-            .parseEncryptedClaims(token)
-            .payload)
         return Jwts.parser()
             .decryptWith(secretKey)
             .build()
