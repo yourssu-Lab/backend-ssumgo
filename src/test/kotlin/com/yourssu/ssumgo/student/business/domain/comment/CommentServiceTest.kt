@@ -120,6 +120,7 @@ class CommentServiceTest {
                 completion = "이수구분",
                 subjectCode = subjectCode,
                 time = 1,
+                department = "디지털미디어학부",
                 credit = 3,
             )
         )

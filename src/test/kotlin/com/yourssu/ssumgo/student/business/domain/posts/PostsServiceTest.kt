@@ -42,6 +42,7 @@ class PostsServiceTest {
         completion = "이수구분",
         subjectCode = 1234,
         time = 1,
+        department = "학과",
         credit = 3,
     )
 

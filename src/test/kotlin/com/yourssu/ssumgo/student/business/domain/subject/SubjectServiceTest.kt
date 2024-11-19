@@ -25,15 +25,33 @@ class SubjectServiceTest {
     private lateinit var studentWriter: StudentWriter
 
     @Test
+    fun save() {
+        val command = SubjectCreatedCommand(
+            subjectName = "과목명",
+            professorName = "교수명",
+            completion = "이수구분",
+            subjectCode = 1234,
+            time = 1,
+            department = "학과",
+            credit = 3
+        )
+
+        val response = subjectService.saveSubject(command)
+
+        assertNotNull(response)
+    }
+
+    @Test
     fun getAllSubjects() {
         val subject = Subject(
-                subjectName = "과목명",
-                professorName = "교수명",
-                completion = "이수구분",
-                subjectCode = 1234,
-                time = 1,
-                credit = 3
-            )
+            subjectName = "과목명",
+            professorName = "교수명",
+            completion = "이수구분",
+            subjectCode = 1234,
+            time = 1,
+            department = "학과",
+            credit = 3
+        )
         subjectWriter.save(subject)
 
         val subjects = subjectService.getAllSubjects()
@@ -56,13 +74,14 @@ class SubjectServiceTest {
         val savedStudent = studentWriter.signIn(student)
 
         val subject = Subject(
-                subjectName = "과목명",
-                professorName = "교수명",
-                completion = "이수구분",
-                subjectCode = 1234,
-                time = 1,
-                credit = 3
-            )
+            subjectName = "과목명",
+            professorName = "교수명",
+            completion = "이수구분",
+            subjectCode = 1234,
+            time = 1,
+            department = "학과",
+            credit = 3
+        )
         val savedSubject = subjectWriter.save(subject)
 
         subjectWriter.saveStudentSubject(savedStudent, savedSubject, 2024, 2)
