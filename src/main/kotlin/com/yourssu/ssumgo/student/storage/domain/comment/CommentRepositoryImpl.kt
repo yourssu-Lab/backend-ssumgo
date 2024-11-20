@@ -79,7 +79,7 @@ interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
 
     @Query(
         value = "SELECT c FROM CommentEntity c " +
-                "JOIN FETCH c.posts p " +
+                "JOIN c.posts p " +
                 "WHERE p.subject.id = :subjectId",
         countQuery = "SELECT COUNT(c) FROM CommentEntity c WHERE c.posts.subject.id = :subjectId"
     )

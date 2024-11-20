@@ -1,21 +1,20 @@
 package com.yourssu.ssumgo.student.storage.domain.posts
 
-import com.yourssu.ssumgo.student.implement.domain.posts.Posts
+import com.yourssu.ssumgo.common.support.config.ApplicationTest
+import com.yourssu.ssumgo.common.support.fixture.PostFixture
+import com.yourssu.ssumgo.common.support.fixture.StudentFixture.STUDENT_LEO
+import com.yourssu.ssumgo.common.support.fixture.SubjectFixture.SUBJECT_1
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
-import com.yourssu.ssumgo.student.implement.domain.student.ProfileImageUrls
 import com.yourssu.ssumgo.student.implement.domain.student.Student
 import com.yourssu.ssumgo.student.implement.domain.subject.Subject
 import com.yourssu.ssumgo.student.storage.domain.student.StudentRepositoryImpl
 import com.yourssu.ssumgo.student.storage.domain.subject.SubjectRepositoryImpl
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.transaction.annotation.Transactional
+import kotlin.test.assertNotNull
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ApplicationTest
 class PostsRepositoryImplTest {
     @Autowired
     private lateinit var postsRepository: PostsRepositoryImpl
@@ -26,86 +25,88 @@ class PostsRepositoryImplTest {
     @Autowired
     private lateinit var subjectRepository: SubjectRepositoryImpl
 
-    private val student = Student(
-        yourssuId = "yourssuId",
-        nickname = "nickname",
-        profileImageUrls = ProfileImageUrls(
-            smallUrl = "smallUrl",
-            midUrl = "mediumUrl",
-            largeUrl = "largeUrl",
-        )
-    )
+    private var student: Student? = null
+    private var subject: Subject? = null
 
-    private val subject = Subject(
-        subjectName = "과목명",
-        professorName = "교수명",
-        completion = "이수구분",
-        subjectCode = 1234,
-        time = 1,
-        department = "학과",
-        credit = 3,
-    )
-
-    @Test
-    fun save() {
-        val title = "My title"
-        val post = savePosts(
-            mentee = studentRepository.saveOrUpdate(student),
-            subject = subjectRepository.save(subject),
-            title = title
-        )
-
-        assertEquals(title, post.title)
+    @BeforeEach
+    fun setUp() {
+        student = studentRepository.saveOrUpdate(STUDENT_LEO.toStudent())
+        subject = subjectRepository.save(SUBJECT_1.toDomain())
     }
 
-    @Test
-    @Transactional
-    fun get() {
-        val post = savePosts(
-            mentee = studentRepository.saveOrUpdate(student),
-            subject = subjectRepository.save(subject),
-        )
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class save_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 질문과_학생과_과목_도메인이_주어지면 {
+            @Test
+            @DisplayName("질문 도메인을 저장한다.")
+            fun success() {
+                val post = PostFixture.POST.toDomain(mentee = student!!, subject = subject!!)
 
-        val response = postsRepository.get(post.id!!)
-
-        assertEquals(post.id, response.id)
-
+                assertNotNull(postsRepository.save(post))
+            }
+        }
     }
 
-    @Test
-    @Transactional
-    fun findAllBySubjectId() {
-        val savedStudent = studentRepository.saveOrUpdate(student)
-        val savedSubject = subjectRepository.save(subject)
-        val posts = (1..21).map { savePosts(
-            mentee = savedStudent,
-            subject = savedSubject,
-            title = "title$it",
-            content = "content$it",
-        ) }
-
-        val response = postsRepository.findAllBySubjectId(
-            subjectId = savedSubject.id!!,
-            pageNumber = 0,
-            sortBy = SortBy.LATEST,
-            pageSize = 10
-        )
-
-        assertEquals(10, response.content.size)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class get_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 해당하는_질문이_존재하지_않으면 {
+            @Test
+            @DisplayName("PostsNotFoundException을 던진다.")
+            fun failure() {
+                assertThrows<PostsNotFoundException> {
+                    postsRepository.get(1L)
+                }
+            }
+        }
     }
 
-    private fun savePosts(
-        mentee: Student,
-        subject: Subject,
-        title: String = "title",
-        content: String = "content"
-    ): Posts {
-        val post = Posts(
-            title = title,
-            content = content,
-            mentee = mentee,
-            subject = subject,
-        )
-        return postsRepository.save(post)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class findAllBySubjectId_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 해당_과목에_등록된_질문이_있을_경우 {
+            @BeforeEach
+            fun setUp() {
+                val post = PostFixture.POST.toDomain(mentee = student!!, subject = subject!!)
+                postsRepository.save(post)
+            }
+
+            @Test
+            @DisplayName("해당 과목의 모든 질문들을 반환한다.")
+            fun success() {
+                val actual = postsRepository.findAllBySubjectId(subject!!.id!!, 0, 10, SortBy.LATEST)
+
+                assertEquals(1, actual.content.size)
+            }
+        }
+    }
+
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class findAllByMenteeId_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 해당_멘티가_등록한_질문이_있을_꼉우 {
+            @BeforeEach
+            fun setUp() {
+                val post = PostFixture.POST.toDomain(mentee = student!!, subject = subject!!)
+                postsRepository.save(post)
+            }
+
+            @Test
+            @DisplayName("해당 멘티가 등록한 모든 질문들을 반환한다.")
+            fun success() {
+                val actual = postsRepository.findAllByMenteeId(student!!.id!!, 0, 10, SortBy.LATEST)
+
+                assertEquals(1, actual.content.size)
+            }
+        }
     }
 }
