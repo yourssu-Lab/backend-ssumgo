@@ -1,42 +1,89 @@
 package com.yourssu.ssumgo.student.storage.domain.student
 
-import com.yourssu.ssumgo.student.implement.domain.student.ProfileImageUrls
+import com.yourssu.ssumgo.common.support.config.ApplicationTest
+import com.yourssu.ssumgo.common.support.fixture.StudentFixture
 import com.yourssu.ssumgo.student.implement.domain.student.Student
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import kotlin.test.assertEquals
 
-@SpringBootTest
+@ApplicationTest
 class StudentRepositoryImplTest {
     @Autowired
-    private lateinit var studentRepositoryImpl: StudentRepositoryImpl
+    private lateinit var studentRepository: StudentRepositoryImpl
 
-    private val yourssuIdFixture = "leo"
-    private val profileImageUrlsFixture = ProfileImageUrls("small", "mid", "large")
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class saveOrUpdate_메서드는 {
+        val student = StudentFixture.STUDENT_LEO.toStudent()
+        val editedStudent = StudentFixture.STUDENT_LEO.toStudent("editedNickname")
 
-    @Test
-    fun saveOrUpdate() {
-        val given = Student(
-            yourssuId = yourssuIdFixture, profileImageUrls =
-            profileImageUrlsFixture
-        )
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 가입되지_않은_학생인_경우 {
+            @Test
+            @DisplayName("학생 도메인을 저장한다.")
+            fun success() {
+                val actual: Student = studentRepository.saveOrUpdate(student)
 
-        val actual: Student = studentRepositoryImpl.saveOrUpdate(given)
+                assertEquals(student.yourssuId, actual.yourssuId)
+            }
+        }
 
-        assertEquals(expected = yourssuIdFixture, actual = actual.yourssuId)
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 가입된_학생인_경우 {
+            @BeforeEach
+            fun setUp() {
+                studentRepository.saveOrUpdate(student)
+            }
+
+            @Test
+            @DisplayName("학생 정보를 업데이트한다.")
+            fun success() {
+                val actual: Student = studentRepository.saveOrUpdate(editedStudent)
+
+                assertAll(
+                    { assertEquals(student.yourssuId, actual.yourssuId) },
+                    { assertEquals(editedStudent.nickname, actual.nickname) }
+                )
+            }
+        }
     }
 
-    @Test
-    fun get() {
-        val student = Student(
-            yourssuId = yourssuIdFixture, profileImageUrls =
-            profileImageUrlsFixture
-        )
-        val given = studentRepositoryImpl.saveOrUpdate(student)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class get_메서드는 {
+        val student = StudentFixture.STUDENT_LEO.toStudent()
 
-        val actual = studentRepositoryImpl.get(given.id!!)
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 가입된_학생인_경우 {
+            @BeforeEach
+            fun setUp(){
+                studentRepository.saveOrUpdate(student)
+            }
 
-        assertEquals(expected = yourssuIdFixture, actual = actual.yourssuId)
+            @Test
+            @DisplayName("학생 도메인을 반환한다.")
+            fun success() {
+                val actual: Student = studentRepository.get(1L)
+
+                assertEquals(student.yourssuId, actual.yourssuId)
+            }
+        }
+
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 가입되지_않은_학생인_경우 {
+            @Test
+            @DisplayName("StudentNotFoundException 예외를 던진다.")
+            fun failure() {
+                assertThrows<StudentNotFoundException> {
+                    studentRepository.get(1L)
+                }
+            }
+        }
     }
+
 }
