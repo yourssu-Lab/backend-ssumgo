@@ -25,14 +25,18 @@ class PostsRepositoryImpl(
     }
 
     override fun findAllBySubjectId(subjectId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): PostsPage {
-        val pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
-        return PostsPage.from(postsJpaRepository.findAllBySubjectId(subjectId = subjectId, pageable = pageable))
+        return PostsPage.from(postsJpaRepository.findAllBySubjectId(subjectId = subjectId, pageable = getPageable(pageNumber, pageSize, sortBy)))
     }
 
     override fun findAllByMenteeId(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): PostsPage {
-        val pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
-        return PostsPage.from(postsJpaRepository.findAllByMenteeId(menteeId = menteeId, pageable = pageable))
+        return PostsPage.from(postsJpaRepository.findAllByMenteeId(menteeId = menteeId, pageable = getPageable(pageNumber, pageSize, sortBy)))
     }
+
+    private fun getPageable(
+        pageNumber: Int,
+        pageSize: Int,
+        sortBy: SortBy
+    ) = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
 }
 
 data class PostsPage(
