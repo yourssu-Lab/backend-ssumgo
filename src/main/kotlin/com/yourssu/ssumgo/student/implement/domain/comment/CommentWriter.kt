@@ -1,6 +1,6 @@
 package com.yourssu.ssumgo.student.implement.domain.comment
 
-import com.yourssu.ssumgo.common.application.domain.common.BadRequestException
+import com.yourssu.ssumgo.common.application.domain.common.ConflictException
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,4 +17,4 @@ class CommentWriter(
     }
 }
 
-class CommentExistException : BadRequestException(message = "해당 질문에 이미 답변이 존재합니다.")
+class CommentExistException : ConflictException(message = "해당 질문에 이미 답변이 존재합니다.")
