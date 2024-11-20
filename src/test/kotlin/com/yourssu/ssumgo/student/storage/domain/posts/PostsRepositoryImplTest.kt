@@ -39,7 +39,7 @@ class PostsRepositoryImplTest {
     inner class save_메서드는 {
         @Nested
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
-        inner class 질문과_학생과_과목_도메인이_주어지면 {
+        inner class 질문과_멘티와_과목_도메인이_주어지면 {
             @Test
             @DisplayName("질문 도메인을 저장한다.")
             fun success() {
