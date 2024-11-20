@@ -1,61 +1,106 @@
 package com.yourssu.ssumgo.student.storage.domain.subject
 
+import com.yourssu.ssumgo.common.support.config.ApplicationTest
+import com.yourssu.ssumgo.common.support.fixture.SubjectFixture
 import com.yourssu.ssumgo.student.implement.domain.subject.Subject
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
 import kotlin.test.assertEquals
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ApplicationTest
 class SubjectRepositoryImplTest {
-
     @Autowired
     private lateinit var subjectRepositoryImpl: SubjectRepositoryImpl
 
-    private val subjectFixture = Subject(
-        subjectName = "과목명",
-        professorName = "교수명",
-        completion = "이수구분",
-        subjectCode = 1234,
-        time = 1,
-        department = "학과",
-        credit = 3,
-    )
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class save_메서드는 {
+        val subject = SubjectFixture.SUBJECT_1.toDomain()
 
-    @Test
-    fun save() {
-        val response = subjectRepositoryImpl.save(subjectFixture)
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 등록되지_않은_과목코드일_경우 {
+            @Test
+            @DisplayName("과목 도메인을 저장한다.")
+            fun success() {
+                val actual: Subject = subjectRepositoryImpl.save(subject)
 
-        assertEquals(subjectFixture.subjectCode, response.subjectCode)
-    }
+                assertEquals(subject.subjectCode, actual.subjectCode)
+            }
+        }
 
-    @Test
-    fun saveDuplication() {
-        subjectRepositoryImpl.save(subjectFixture)
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 이미_등록된_과목코드일_경우 {
+            @BeforeEach
+            fun setUp() {
+                subjectRepositoryImpl.save(subject)
+            }
 
-        assertThrows<SubjectAlreadyExistsException> {
-            subjectRepositoryImpl.save(subjectFixture)
+            @Test
+            @DisplayName("SubjectAlreadyExistsException 예외를 던진다.")
+            fun failure() {
+                assertThrows<SubjectAlreadyExistsException>(
+                    { subjectRepositoryImpl.save(subject) }
+                )
+            }
         }
     }
 
-    @Test
-    fun getAllSubjects() {
-        subjectRepositoryImpl.save(subjectFixture)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class getAllSubjects_메서드는() {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 등록된_과목이_있는_경우 {
+            @BeforeEach
+            fun setUp() {
+                subjectRepositoryImpl.save(SubjectFixture.SUBJECT_1.toDomain())
+                subjectRepositoryImpl.save(SubjectFixture.SUBJECT_2.toDomain())
+            }
 
-        val response = subjectRepositoryImpl.getAllSubjects()
+            @Test
+            @DisplayName("등록된 모든 과목을 반환한다.")
+            fun success() {
+                val actual: List<Subject> = subjectRepositoryImpl.getAllSubjects()
 
-        assertEquals(1, response.size)
+                assertEquals(2, actual.size)
+            }
+        }
     }
 
-    @Test
-    fun get() {
-        val savedSubject = subjectRepositoryImpl.save(subjectFixture)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class get_메서드는 {
+        val subject = SubjectFixture.SUBJECT_1.toDomain()
 
-        val response = subjectRepositoryImpl.get(savedSubject.id!!)
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 존재하는_과목일_경우 {
+            @BeforeEach
+            fun setUp() {
+                subjectRepositoryImpl.save(subject)
+            }
 
-        assertEquals(savedSubject.id, response.id)
+            @Test
+            @DisplayName("과목 도메인을 반환한다.")
+            fun success() {
+                val actual: Subject = subjectRepositoryImpl.get(1L)
+
+                assertEquals(subject.subjectCode, actual.subjectCode)
+            }
+        }
+
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 존재하지_않는_과목일_경우 {
+            @Test
+            @DisplayName("SubjectNotFoundException 예외를 던진다.")
+            fun failure() {
+                assertThrows<SubjectNotFoundException>(
+                    { subjectRepositoryImpl.get(1L) }
+                )
+            }
+        }
     }
 }
