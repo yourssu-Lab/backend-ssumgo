@@ -16,17 +16,17 @@ class CommentService(
     private val subjectReader: SubjectReader,
 ) {
     fun saveComment(command: CommentCreatedCommand): CommentResponse {
-        val mentor = studentReader.getStudent(command.mentorId)
-        val posts = postsReader.getById(command.postsId)
+        val mentor = studentReader.get(command.mentorId)
+        val posts = postsReader.get(command.postsId)
         return CommentResponse.from(commentWriter.save(command.toDomain(mentor, posts)))
     }
 
     fun getCommentById(postId: Long, commentId: Long): CommentResponse {
-        return CommentResponse.from(commentReader.getById(postId = postId, commentId = commentId))
+        return CommentResponse.from(commentReader.getByPost(postId = postId, commentId = commentId))
     }
 
     fun findAllCommentsByMentee(command: CommentFoundBySubjectCommand): CommentsPageResponse {
-        val subject = subjectReader.getSubject(command.subjectId)
+        val subject = subjectReader.get(command.subjectId)
         val commentsPage = commentReader.getAllBySubject(
             subjectId = subject.id!!,
             pageNumber = command.page,

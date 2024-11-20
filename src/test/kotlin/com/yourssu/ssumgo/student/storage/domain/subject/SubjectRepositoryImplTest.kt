@@ -49,7 +49,7 @@ class SubjectRepositoryImplTest {
 
     @Nested
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
-    inner class getAllSubjects_메서드는() {
+    inner class getAllSubjects_메서드는 {
         @Nested
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
         inner class 등록된_과목이_있는_경우 {

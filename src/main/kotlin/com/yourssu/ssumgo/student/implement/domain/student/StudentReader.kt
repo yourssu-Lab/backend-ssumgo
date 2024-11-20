@@ -8,7 +8,7 @@ class StudentReader(
     private val studentRepository: StudentRepository
 ) {
     @Transactional(readOnly = true)
-    fun getStudent(studentId: Long): Student {
+    fun get(studentId: Long): Student {
         return studentRepository.get(studentId)
     }
 }

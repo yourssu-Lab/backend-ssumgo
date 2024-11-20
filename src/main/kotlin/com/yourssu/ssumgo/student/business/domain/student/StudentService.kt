@@ -15,12 +15,12 @@ class StudentService(
     private val commentReader: CommentReader,
 ) {
     fun getStudent(studentId: Long): StudentResponse {
-        val student = studentReader.getStudent(studentId)
+        val student = studentReader.get(studentId)
         return StudentResponse.from(student)
     }
 
     fun findAllCommentsByMentee(command: CommentFoundByMenteeCommand): CommentsPageResponse {
-        val mentee = studentReader.getStudent(command.menteeId)
+        val mentee = studentReader.get(command.menteeId)
         val commentsPage = commentReader.getAllByMentee(
             menteeId = mentee.id!!,
             pageNumber = command.page,
@@ -31,8 +31,8 @@ class StudentService(
     }
 
     fun findAllPostsByMentee(command: PostsFoundByMenteeCommand): PostsPageResponse {
-        val mentee = studentReader.getStudent(command.menteeId)
-        val postsPage = postsReader.findAllPostsByMentee(
+        val mentee = studentReader.get(command.menteeId)
+        val postsPage = postsReader.findAllByMentee(
             menteeId = mentee.id!!,
             pageNumber = command.page,
             pageSize = command.size,
