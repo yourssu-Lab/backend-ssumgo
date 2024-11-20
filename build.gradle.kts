@@ -62,6 +62,9 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
     implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
+
+    // Guava
+    implementation("com.google.guava:guava:33.3.0-jre")
 }
 
 dependencyManagement {
