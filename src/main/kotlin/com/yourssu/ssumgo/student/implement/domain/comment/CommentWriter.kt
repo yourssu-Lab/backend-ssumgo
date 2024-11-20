@@ -10,7 +10,7 @@ class CommentWriter(
 ) {
     @Transactional
     fun save(comment: Comment): Comment {
-        if (commentRepository.existsComment(comment.posts)) {
+        if (commentRepository.existsComment(postId = comment.posts.id!!)) {
             throw CommentExistException()
         }
         return commentRepository.save(comment)
