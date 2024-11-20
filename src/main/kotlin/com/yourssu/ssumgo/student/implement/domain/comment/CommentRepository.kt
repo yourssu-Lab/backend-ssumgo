@@ -1,6 +1,5 @@
 package com.yourssu.ssumgo.student.implement.domain.comment
 
-import com.yourssu.ssumgo.student.implement.domain.posts.Posts
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
 import com.yourssu.ssumgo.student.storage.domain.comment.CommentsPage
 
@@ -9,7 +8,7 @@ interface CommentRepository {
 
     fun get(postId: Long, commentId: Long): Comment
 
-    fun existsComment(posts: Posts): Boolean
+    fun existsComment(postId: Long): Boolean
 
     fun findAllBySubject(
         subjectId: Long,

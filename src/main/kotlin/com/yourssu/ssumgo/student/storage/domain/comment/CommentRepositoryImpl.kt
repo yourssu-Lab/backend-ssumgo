@@ -3,9 +3,7 @@ package com.yourssu.ssumgo.student.storage.domain.comment
 import com.yourssu.ssumgo.common.application.domain.common.NotFoundException
 import com.yourssu.ssumgo.student.implement.domain.comment.Comment
 import com.yourssu.ssumgo.student.implement.domain.comment.CommentRepository
-import com.yourssu.ssumgo.student.implement.domain.posts.Posts
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
-import com.yourssu.ssumgo.student.storage.domain.posts.PostsEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -26,10 +24,9 @@ class CommentRepositoryImpl(
             ?: throw CommentNotFoundException()
     }
 
-    override fun existsComment(posts: Posts): Boolean {
-        return commentJpaRepository.existsByPosts(PostsEntity.toEntity(posts))
+    override fun existsComment(postId: Long): Boolean {
+        return commentJpaRepository.existsByPostId(postId)
     }
-
 
     override fun findAllBySubject(
         subjectId: Long,
@@ -37,22 +34,26 @@ class CommentRepositoryImpl(
         pageSize: Int,
         sortBy: SortBy
     ): CommentsPage {
-        val pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
-        val comments =
-            commentJpaRepository.findAllBySubjectId(
-                subjectId = subjectId,
-                pageable = pageable
-            )
+        val comments = commentJpaRepository.findAllBySubjectId(
+            subjectId = subjectId,
+            pageable = getPageable(pageNumber, pageSize, sortBy)
+        )
         return CommentsPage.from(comments)
     }
 
     override fun findAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
         val comments = commentJpaRepository.findAllByMenteeId(
             menteeId = menteeId,
-            pageable = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
+            pageable = getPageable(pageNumber, pageSize, sortBy),
         )
         return CommentsPage.from(comments)
     }
+
+    private fun getPageable(
+        pageNumber: Int,
+        pageSize: Int,
+        sortBy: SortBy
+    ) = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
 }
 
 data class CommentsPage(
@@ -85,8 +86,8 @@ interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
     )
     fun findAllBySubjectId(subjectId: Long, pageable: Pageable): Page<CommentEntity>
 
-    @Query("select (count(c) > 0) from CommentEntity c where c.posts = ?1")
-    fun existsByPosts(posts: PostsEntity): Boolean
+    @Query("select (count(c) > 0) from CommentEntity c where c.posts.id = :postId")
+    fun existsByPostId(postId: Long): Boolean
 
     @Query(
         value = "SELECT c FROM CommentEntity c " +
