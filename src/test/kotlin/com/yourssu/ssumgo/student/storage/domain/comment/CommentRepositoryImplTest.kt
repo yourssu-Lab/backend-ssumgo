@@ -1,24 +1,25 @@
 package com.yourssu.ssumgo.student.storage.domain.comment
 
-import com.yourssu.ssumgo.student.implement.domain.comment.Comment
+import com.yourssu.ssumgo.common.support.config.ApplicationTest
+import com.yourssu.ssumgo.common.support.fixture.CommentFixture.COMMENT
+import com.yourssu.ssumgo.common.support.fixture.PostFixture
+import com.yourssu.ssumgo.common.support.fixture.StudentFixture.STUDENT_LEO
+import com.yourssu.ssumgo.common.support.fixture.StudentFixture.STUDENT_MAI
+import com.yourssu.ssumgo.common.support.fixture.SubjectFixture.SUBJECT_1
 import com.yourssu.ssumgo.student.implement.domain.posts.Posts
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
-import com.yourssu.ssumgo.student.implement.domain.student.ProfileImageUrls
 import com.yourssu.ssumgo.student.implement.domain.student.Student
 import com.yourssu.ssumgo.student.implement.domain.subject.Subject
 import com.yourssu.ssumgo.student.storage.domain.posts.PostsRepositoryImpl
 import com.yourssu.ssumgo.student.storage.domain.student.StudentRepositoryImpl
 import com.yourssu.ssumgo.student.storage.domain.subject.SubjectRepositoryImpl
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.transaction.annotation.Transactional
-import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ApplicationTest
 class CommentRepositoryImplTest {
     @Autowired
     private lateinit var commentRepository: CommentRepositoryImpl
@@ -32,115 +33,120 @@ class CommentRepositoryImplTest {
     @Autowired
     private lateinit var subjectRepository: SubjectRepositoryImpl
 
-    @Test
-    fun save() {
-        // given
-        val mentee = saveStudent()
-        val subject = saveSubject()
-        val posts = savePosts(mentee, subject)
+    private var mentee: Student? = null
+    private var mentor: Student? = null
+    private var subject: Subject? = null
+    private var posts: Posts? = null
+    private var posts2: Posts? = null
 
-        val comment = Comment(
-            mentor = mentee,
-            posts = posts,
-            title = "title",
-            content = "content"
-        )
-        // when
-        val response = commentRepository.save(comment)
-
-        // then
-        assertNotNull(response.id)
+    @BeforeEach
+    fun setUp() {
+        mentee = studentRepository.saveOrUpdate(STUDENT_LEO.toStudent())
+        mentor = studentRepository.saveOrUpdate(STUDENT_MAI.toStudent())
+        subject = subjectRepository.save(SUBJECT_1.toDomain())
+        posts = postsRepository.save(PostFixture.POST.toDomain(mentee!!, subject!!))
+        posts2 = postsRepository.save(PostFixture.POST.toDomain(mentee!!, subject!!))
     }
 
-    @Test
-    @Transactional
-    fun get() {
-        // given
-        val mentee = saveStudent()
-        val mentor = saveStudent("mentor")
-        val subject = saveSubject()
-        val posts = savePosts(mentee, subject)
-        val comment = saveComment(mentor, posts)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class save_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 질문과_멘토_도메인이_주어지면 {
+            @Test
+            @DisplayName("답변 도메인을 저장한다.")
+            fun success() {
+                val comment = COMMENT.toDomain(mentor!!, posts!!)
 
-        // when
-        val response = commentRepository.get(postId = posts.id!!, commentId = comment.id!!)
-
-        // then
-        assertEquals(comment.id, response.id)
+                assertNotNull(commentRepository.save(comment))
+            }
+        }
     }
 
-    @Test
-    @Transactional
-    fun findAllByMentee() {
-        // given
-        val mentee = saveStudent()
-        val mentor = saveStudent("mentor")
-        val subject = saveSubject()
-        val posts = savePosts(mentee, subject)
-        val comment1 = saveComment(mentor, posts)
-        val comment2 = saveComment(mentor, posts)
-
-        // when
-        val response = commentRepository.findAllBySubject(
-            subjectId = subject.id!!,
-            pageNumber = 0,
-            pageSize = 10,
-            sortBy = SortBy.LATEST
-        )
-
-        // then
-        assertEquals(2, response.content.size)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class get_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 질문에_해당하는_답변이_존재하지_않으면 {
+            @Test
+            @DisplayName("CommentNotFoundException 예외를 던진다.")
+            fun success() {
+                assertThrows<CommentNotFoundException>(
+                    { commentRepository.get(posts!!.id!!, 1L) },
+                )
+            }
+        }
     }
 
-    private fun saveComment(
-        mentor: Student,
-        posts: Posts,
-        title: String = "title",
-        content: String = "content"
-    ): Comment {
-        val comment = Comment(
-            mentor = mentor,
-            posts = posts,
-            title = title,
-            content = content
-        )
-        return commentRepository.save(comment)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class existsComment_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 질문에_해당하는_답변이_존재하면 {
+            @Test
+            @DisplayName("true를 반환한다.")
+            fun success() {
+                commentRepository.save(COMMENT.toDomain(mentor!!, posts!!))
+
+                val actual = commentRepository.existsComment(posts!!.id!!)
+
+                assertTrue(actual)
+            }
+        }
     }
 
-    private fun saveStudent(yourssuId: String = "leo"): Student {
-        val profileImageUrlsFixture = ProfileImageUrls("small", "mid", "large")
-        val student = Student(
-            yourssuId = yourssuId,
-            profileImageUrls = profileImageUrlsFixture
-        )
-        return studentRepository.saveOrUpdate(student)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class findAllBySubject_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 해당_과목에_등록된_답변이_있을_꼉우 {
+            @BeforeEach
+            fun setUp() {
+                commentRepository.save(COMMENT.toDomain(mentor!!, posts!!))
+                commentRepository.save(COMMENT.toDomain(mentor!!, posts2!!))
+            }
+
+            @Test
+            @DisplayName("해당 과목에 등록된 모든 답변들을 반환한다.")
+            fun success() {
+                val actual = commentRepository.findAllBySubject(
+                    subjectId = subject!!.id!!,
+                    pageNumber = 0,
+                    pageSize = 10,
+                    sortBy = SortBy.LATEST)
+
+                assertEquals(2, actual.content.size)
+            }
+        }
     }
 
-    private fun saveSubject(): Subject {
-        val subject = Subject(
-            subjectName = "과목명",
-            professorName = "교수명",
-            completion = "이수구분",
-            subjectCode = 1234,
-            time = 1,
-            department = "학과",
-            credit = 3,
-        )
-        return subjectRepository.save(subject)
-    }
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class findAllByMentee_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 해당_멘티가_등록한_질문에_답변이_있을_경우 {
+            @BeforeEach
+            fun setUp() {
+                commentRepository.save(COMMENT.toDomain(mentor!!, posts!!))
+                commentRepository.save(COMMENT.toDomain(mentor!!, posts2!!))
+            }
 
-    private fun savePosts(
-        mentee: Student,
-        subject: Subject,
-        title: String = "title",
-        content: String = "content"
-    ): Posts {
-        val post = Posts(
-            title = title,
-            content = content,
-            mentee = mentee,
-            subject = subject,
-        )
-        return postsRepository.save(post)
+            @Test
+            @DisplayName("해당 멘티의 질문에 등록된 모든 답변들을 반환한다.")
+            fun success() {
+                val actual = commentRepository.findAllByMentee(
+                    menteeId = mentee!!.id!!,
+                    pageNumber = 0,
+                    pageSize = 10,
+                    sortBy = SortBy.LATEST)
+
+                assertEquals(2, actual.content.size)
+            }
+        }
     }
 }
