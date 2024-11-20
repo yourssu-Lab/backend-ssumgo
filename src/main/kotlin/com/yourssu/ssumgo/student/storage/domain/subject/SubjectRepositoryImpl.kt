@@ -1,6 +1,6 @@
 package com.yourssu.ssumgo.student.storage.domain.subject
 
-import com.yourssu.ssumgo.common.application.domain.common.ForbiddenException
+import com.yourssu.ssumgo.common.application.domain.common.ConflictException
 import com.yourssu.ssumgo.common.application.domain.common.NotFoundException
 import com.yourssu.ssumgo.student.implement.domain.subject.Subject
 import com.yourssu.ssumgo.student.implement.domain.subject.SubjectRepository
@@ -39,4 +39,4 @@ interface SubjectJpaRepository : JpaRepository<SubjectEntity, Long> {
 
 class SubjectNotFoundException : NotFoundException(message = "해당하는 과목이 없습니다.")
 
-class SubjectAlreadyExistsException : ForbiddenException(message = "이미 존재하는 과목코드입니다.")
+class SubjectAlreadyExistsException : ConflictException(message = "이미 존재하는 과목코드입니다.")
