@@ -15,11 +15,11 @@ class SubjectService(
     }
 
     fun getSubjectsByStudent(studentId: Long, years: Int, semester: Int): List<SubjectResponse> {
-        return subjectReader.getSubjects(studentId, years, semester).map { SubjectResponse.from(it) }
+        return subjectReader.getByStudent(studentId, years, semester).map { SubjectResponse.from(it) }
     }
 
     fun getAllSubjects(): List<SubjectResponse> {
-        return subjectReader.getAllSubjects().map { SubjectResponse.from(it) }
+        return subjectReader.getAll().map { SubjectResponse.from(it) }
     }
 }
 

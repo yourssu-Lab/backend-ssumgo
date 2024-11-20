@@ -9,12 +9,12 @@ class PostsReader(
     private val postsRepository: PostsRepository,
 ) {
     @Transactional(readOnly = true)
-    fun getById(id: Long): Posts {
+    fun get(id: Long): Posts {
         return postsRepository.get(id)
     }
 
     @Transactional(readOnly = true)
-    fun findAllPostsBySubject(subjectId: Long, pageNumber: Int, sortBy: SortBy = SortBy.LATEST, size: Int): PostsPage {
+    fun findAllBySubject(subjectId: Long, pageNumber: Int, sortBy: SortBy = SortBy.LATEST, size: Int): PostsPage {
         return postsRepository.findAllBySubjectId(
             subjectId = subjectId,
             pageNumber = pageNumber - 1,
@@ -24,7 +24,7 @@ class PostsReader(
     }
 
     @Transactional(readOnly = true)
-    fun findAllPostsByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): PostsPage {
+    fun findAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): PostsPage {
         return postsRepository.findAllByMenteeId(
             menteeId = menteeId,
             pageNumber = pageNumber - 1,

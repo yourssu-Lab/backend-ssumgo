@@ -9,17 +9,17 @@ class SubjectReader(
     private val studentSubjectRepository: StudentSubjectRepository
 ) {
     @Transactional(readOnly = true)
-    fun getSubjects(studentId: Long, years: Int, semester: Int): List<Subject> {
+    fun getByStudent(studentId: Long, years: Int, semester: Int): List<Subject> {
         return studentSubjectRepository.getSubjects(studentId, years, semester)
     }
 
     @Transactional(readOnly = true)
-    fun getSubject(subjectId: Long): Subject {
+    fun get(subjectId: Long): Subject {
         return subjectRepository.get(subjectId)
     }
 
     @Transactional(readOnly = true)
-    fun getAllSubjects(): List<Subject> {
+    fun getAll(): List<Subject> {
         return subjectRepository.getAllSubjects()
     }
 }

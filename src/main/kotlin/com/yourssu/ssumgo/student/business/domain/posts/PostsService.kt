@@ -14,18 +14,18 @@ class PostsService(
     private val subjectReader: SubjectReader
 ) {
     fun savePosts(command: PostsCreatedCommand): PostsResponse {
-        val mentee = studentReader.getStudent(command.menteeId)
-        val subject = subjectReader.getSubject(command.subjectId)
+        val mentee = studentReader.get(command.menteeId)
+        val subject = subjectReader.get(command.subjectId)
         return PostsResponse.from(postsWriter.savePost(command.toDomain(mentee, subject)))
     }
 
     fun getPostsById(id: Long): PostsResponse {
-        return PostsResponse.from(postsReader.getById(id))
+        return PostsResponse.from(postsReader.get(id))
     }
 
     fun findAllPostsBySubjectId(command: PostsFoundBySubjectCommand): PostsPageResponse {
-        val subject = subjectReader.getSubject(command.subjectId)
-        val postsPage = postsReader.findAllPostsBySubject(
+        val subject = subjectReader.get(command.subjectId)
+        val postsPage = postsReader.findAllBySubject(
             subjectId = subject.id!!,
             pageNumber = command.page,
             sortBy = command.sortBy,
