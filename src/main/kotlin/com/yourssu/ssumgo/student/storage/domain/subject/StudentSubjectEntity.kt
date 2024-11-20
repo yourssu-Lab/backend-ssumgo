@@ -37,4 +37,8 @@ class StudentSubjectEntity(
             )
         }
     }
+
+    fun toDomain(): Subject {
+        return subject.toDomain()
+    }
 }

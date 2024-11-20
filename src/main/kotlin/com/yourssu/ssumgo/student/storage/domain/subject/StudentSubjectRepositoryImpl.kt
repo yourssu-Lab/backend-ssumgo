@@ -3,7 +3,6 @@ package com.yourssu.ssumgo.student.storage.domain.subject
 import com.yourssu.ssumgo.student.implement.domain.student.Student
 import com.yourssu.ssumgo.student.implement.domain.subject.StudentSubjectRepository
 import com.yourssu.ssumgo.student.implement.domain.subject.Subject
-import com.yourssu.ssumgo.student.storage.domain.student.StudentRepositoryImpl
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -11,26 +10,35 @@ import org.springframework.stereotype.Repository
 @Repository
 class StudentSubjectRepositoryImpl(
     private val studentSubjectJpaRepository: StudentSubjectJpaRepository,
-    private val studentRepositoryImpl: StudentRepositoryImpl,
-    private val subjectRepositoryImpl: SubjectRepositoryImpl,
 ) : StudentSubjectRepository {
-    override fun getSubjects(studentId: Long, years: Int, semester: Int): List<Subject> {
-        val subjects = studentSubjectJpaRepository.getSubjects(studentId, years, semester)
-        return subjects.map { it.toDomain() }
-    }
-
-    override fun save(student: Student, subject: Subject, years: Int, semester: Int): Long {
-        val savedStudent = studentRepositoryImpl.get(student.id!!)
-        val savedSubject = subjectRepositoryImpl.get(subject.id!!)
-        val studentSubjectEntity = studentSubjectJpaRepository.save(
+    override fun save(student: Student, subject: Subject, years: Int, semester: Int): Subject {
+        val studentSubject = studentSubjectJpaRepository.save(
             StudentSubjectEntity.toEntity(
-                student = savedStudent,
-                subject = savedSubject,
+                student = student,
+                subject = subject,
                 years = years,
                 semester = semester,
             )
         )
-        return studentSubjectEntity.id!!
+        return studentSubject.toDomain()
+    }
+
+    override fun existsStudentSubject(studentId: Long, subjectId: Long, years: Int, semester: Int): Boolean {
+        return studentSubjectJpaRepository.existsStudentSubject(
+            studentId = studentId,
+            subjectId = subjectId,
+            years = years,
+            semester = semester
+        )
+    }
+
+    override fun getSubjects(studentId: Long, years: Int, semester: Int): List<Subject> {
+        val subjects = studentSubjectJpaRepository.getSubjects(
+            studentId = studentId,
+            years = years,
+            semester = semester
+        )
+        return subjects.map { it.toDomain() }
     }
 }
 
@@ -43,6 +51,12 @@ interface StudentSubjectJpaRepository : JpaRepository<StudentSubjectEntity, Long
     )
     fun getSubjects(studentId: Long, years: Int, semester: Int): List<SubjectEntity>
 
-    @Query("select s from StudentSubjectEntity s where s.id = :id")
-    fun get(id: Long): StudentSubjectEntity?
+    @Query(
+        "select (count(s) > 0) from StudentSubjectEntity s " +
+                "where s.student.id = :studentId and " +
+                "s.subject.id = :subjectId and " +
+                "s.years = :years and " +
+                "s.semester = :semester"
+    )
+    fun existsStudentSubject(studentId: Long, subjectId: Long, years: Int, semester: Int): Boolean
 }
