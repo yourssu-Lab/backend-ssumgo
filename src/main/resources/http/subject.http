@@ -1,5 +1,3 @@
-@serverUrl = localhost:8080
-
 @subjectId = 1
 @subjectCode = 2
 
