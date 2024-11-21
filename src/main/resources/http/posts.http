@@ -3,26 +3,7 @@
 @subjectId = 1
 @postsId = 1
 
-@email = "nggus5@soongsil.ac.kr"
-@password = "leopassword123123"
-
-// 숭실숨고 로그인 요청
-###
-POST {{serverUrl}}/auth/login
-Content-Type: application/json
-
-{
-  "email": {{email}},
-  "password": {{password}}
-}
-
-> {%
-    const responseBody = response.body;
-    client.log("accessToken: " + responseBody.accessToken);
-%}
-###
-
-// 게시글 작성
+// 질문 등록
 ###
 POST {{serverUrl}}/posts
 Authorization: Bearer {{accessToken}}
@@ -35,13 +16,24 @@ Content-Type: application/json
 }
 ###
 
-//게시글 조회
-###
-GET {{serverUrl}}/posts/{{postsId}}
-
-###
-
-//과목별 게시글 조회
+// 과목별 질문 조회
 ###
 GET {{serverUrl}}/posts/subjects/{{subjectId}}?page=1&size=10&sortBy=earliest
+Content-Type: application/json
+
+###
+
+// 나의 질문 조회
+###
+GET {{serverUrl}}/students/posts?page=1&size=10&sortBy=earliest
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+###
+
+// 질문 상세 조회
+###
+GET {{serverUrl}}/posts/{{postsId}}
+Content-Type: application/json
+
 ###

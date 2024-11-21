@@ -1,7 +1,7 @@
 @serverUrl = localhost:8080
 
 @subjectId = 1
-@subjectCode = 1
+@subjectCode = 2
 
 @email = "nggus5@soongsil.ac.kr"
 @password = "leopassword123123"
@@ -18,7 +18,7 @@ Content-Type: application/json
 
 > {%
     const responseBody = response.body;
-    client.log("accessToken: " + responseBody.accessToken);
+    client.global.set("accessToken", responseBody.result.accessToken);
 %}
 
 ###
@@ -41,8 +41,31 @@ Content-Type: application/json
 
 ###
 
-//과목 조회
+// 수강 과목 등록
+###
+POST {{serverUrl}}/subjects/students
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "subjectId": {{subjectId}},
+  "years": 2024,
+  "semester": 1
+}
+
+###
+
+//전체 과목 조회
 ###
 GET {{serverUrl}}/subjects
+Content-Type: application/json
+
+###
+
+//수강 중인 과목 조회
+###
+GET {{serverUrl}}/subjects/students
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
 
 ###
