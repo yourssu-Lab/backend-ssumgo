@@ -30,7 +30,7 @@ class PostsRepositoryImplTest {
 
     @BeforeEach
     fun setUp() {
-        student = studentRepository.saveOrUpdate(STUDENT_LEO.toStudent())
+        student = studentRepository.saveOrUpdate(STUDENT_LEO.toDomain())
         subject = subjectRepository.save(SUBJECT_1.toDomain())
     }
 

@@ -41,8 +41,8 @@ class CommentRepositoryImplTest {
 
     @BeforeEach
     fun setUp() {
-        mentee = studentRepository.saveOrUpdate(STUDENT_LEO.toStudent())
-        mentor = studentRepository.saveOrUpdate(STUDENT_MAI.toStudent())
+        mentee = studentRepository.saveOrUpdate(STUDENT_LEO.toDomain())
+        mentor = studentRepository.saveOrUpdate(STUDENT_MAI.toDomain())
         subject = subjectRepository.save(SUBJECT_1.toDomain())
         posts = postsRepository.save(PostFixture.POST.toDomain(mentee!!, subject!!))
         posts2 = postsRepository.save(PostFixture.POST.toDomain(mentee!!, subject!!))

@@ -15,8 +15,8 @@ class StudentRepositoryImplTest {
     @Nested
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
     inner class saveOrUpdate_메서드는 {
-        private val student = StudentFixture.STUDENT_LEO.toStudent()
-        private val editedStudent = StudentFixture.STUDENT_LEO.toStudent("editedNickname")
+        private val student = StudentFixture.STUDENT_LEO.toDomain()
+        private val editedStudent = StudentFixture.STUDENT_LEO.toDomain("editedNickname")
 
         @Nested
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
@@ -54,7 +54,7 @@ class StudentRepositoryImplTest {
     @Nested
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
     inner class get_메서드는 {
-        val student = StudentFixture.STUDENT_LEO.toStudent()
+        val student = StudentFixture.STUDENT_LEO.toDomain()
 
         @Nested
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
