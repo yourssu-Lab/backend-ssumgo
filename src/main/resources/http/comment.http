@@ -1,0 +1,40 @@
+@serverUrl = localhost:8080
+
+@subjectId = 1
+@postsId = 1
+@commentId = 1
+
+// 답변 등록
+###
+POST {{serverUrl}}/posts/{{postsId}}/comments
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "title",
+  "content": "content"
+}
+
+###
+
+// 멘토 답변 조회 - 과목 대상
+###
+GET {{serverUrl}}/subjects/{{subjectId}}/comments
+Content-Type: application/json
+
+###
+
+// 나의 답변 조회
+###
+GET {{serverUrl}}/students/comments
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+###
+
+// 답변 상세 조회
+###
+GET {{serverUrl}}/posts/{{postsId}}/comments/{{commentId}}
+Content-Type: application/json
+
+###

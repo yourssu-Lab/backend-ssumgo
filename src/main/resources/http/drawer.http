@@ -1,0 +1,33 @@
+@serverUrl = localhost:8080
+
+@subjectId = 1
+@postsId = 1
+@commentId = 1
+@starId = 1
+
+// 보관함 추가
+###
+POST {{serverUrl}}/drawers
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "commentId": {{commentId}}
+}
+
+###
+
+// 나의 보관함 조회
+###
+GET {{serverUrl}}/drawers/students
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+###
+
+// 보관함 삭제
+###
+DELETE {{serverUrl}}/drawers/comments/{{commentId}}
+Authorization: Bearer {{accessToken}}
+
+###

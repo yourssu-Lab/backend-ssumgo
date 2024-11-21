@@ -1,0 +1,27 @@
+@serverUrl = localhost:8080
+
+@subjectId = 1
+@postsId = 1
+@commentId = 1
+@starId = 1
+
+// 멘토 평가 등록
+###
+POST {{serverUrl}}/evaluations
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "commentId": {{commentId}},
+  "rating": 5,
+  "additionalInfo": "멘토님 최고"
+}
+
+###
+
+// 멘토 평가 조회
+###
+GET {{serverUrl}}/evaluations/comments/{{commentId}}
+Content-Type: application/json
+
+###
