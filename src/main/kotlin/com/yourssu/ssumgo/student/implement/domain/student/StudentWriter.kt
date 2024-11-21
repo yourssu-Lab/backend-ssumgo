@@ -8,7 +8,7 @@ class StudentWriter(
     private val studentRepository: StudentRepository,
 ) {
     @Transactional
-    fun signIn(student: Student): Student {
+    fun save(student: Student): Student {
         return studentRepository.saveOrUpdate(student)
     }
 }

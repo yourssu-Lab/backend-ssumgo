@@ -99,7 +99,7 @@ class CommentServiceTest {
     }
 
     private fun saveStudent(yourssuId: String = "yourssuId"): Student {
-        return studentWriter.signIn(
+        return studentWriter.save(
             Student(
                 yourssuId = yourssuId,
                 nickname = "nickname",

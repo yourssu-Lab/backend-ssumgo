@@ -49,7 +49,7 @@ class PostsServiceTest {
     @Test
     fun savePosts() {
         // given
-        val savedStudent = studentWriter.signIn(student)
+        val savedStudent = studentWriter.save(student)
         val savedSubject = subjectWriter.save(subject)
         val posts = Posts(
             title = "My title",
@@ -74,7 +74,7 @@ class PostsServiceTest {
     @Test
     fun getPostsById() {
         // given
-        val savedStudent = studentWriter.signIn(student)
+        val savedStudent = studentWriter.save(student)
         val savedSubject = subjectWriter.save(subject)
         val posts = save(savedStudent, savedSubject)
 
@@ -88,7 +88,7 @@ class PostsServiceTest {
     @Test
     fun findAllPostsBySubjectId() {
         // given
-        val savedStudent = studentWriter.signIn(student)
+        val savedStudent = studentWriter.save(student)
         val savedSubject = subjectWriter.save(subject)
         val posts = (1..21).map { save(
             mentee = savedStudent,

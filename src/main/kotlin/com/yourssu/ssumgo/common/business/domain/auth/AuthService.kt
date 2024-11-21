@@ -38,7 +38,7 @@ class AuthService(
 
     private fun signInSsumgo(token: TokenResponse): SignInResponse {
         val userResponse: UserResponse = userClient.getUser("${JwtTokenProvider.BEARER_FORMAT}${token.accessToken}")
-        val student = studentWriter.signIn(userResponse.toDomain())
+        val student = studentWriter.save(userResponse.toDomain())
         return SignInResponse(
             accessToken = accessTokenGenerator.generateToken(student.id!!),
             refreshToken = token.refreshToken,
