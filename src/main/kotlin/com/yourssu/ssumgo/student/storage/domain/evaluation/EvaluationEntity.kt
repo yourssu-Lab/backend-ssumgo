@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.student.storage.domain.evaluation
 
+import com.yourssu.ssumgo.common.storage.domain.common.BaseEntity
 import com.yourssu.ssumgo.student.implement.domain.evaluation.Evaluation
 import com.yourssu.ssumgo.student.implement.domain.evaluation.Rating
 import com.yourssu.ssumgo.student.storage.domain.comment.CommentEntity
@@ -26,7 +27,7 @@ class EvaluationEntity(
 
     @Column(nullable = false)
     val additionalInfo: String,
-) {
+) : BaseEntity() {
     companion object {
         fun toEntity(evaluation: Evaluation): EvaluationEntity {
             return EvaluationEntity(
