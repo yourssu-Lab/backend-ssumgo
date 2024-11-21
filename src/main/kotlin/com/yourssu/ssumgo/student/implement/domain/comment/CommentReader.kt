@@ -10,6 +10,11 @@ class CommentReader(
     private val commentRepository: CommentRepository
 ) {
     @Transactional(readOnly = true)
+    fun get(commentId: Long): Comment {
+        return commentRepository.get(commentId)
+    }
+
+    @Transactional(readOnly = true)
     fun getByPost(postId: Long, commentId: Long): Comment {
         return commentRepository.get(postId = postId, commentId = commentId)
     }
