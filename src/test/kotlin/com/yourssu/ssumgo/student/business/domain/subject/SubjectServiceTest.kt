@@ -66,7 +66,7 @@ class SubjectServiceTest {
 
         @BeforeEach
         fun setUp() {
-            student = studentWriter.signIn(StudentFixture.STUDENT_LEO.toStudent())
+            student = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
             val subject = subjectWriter.save(SUBJECT_1.toDomain())
             subjectWriter.saveStudentSubject(student!!, subject, 2024, 2)
         }

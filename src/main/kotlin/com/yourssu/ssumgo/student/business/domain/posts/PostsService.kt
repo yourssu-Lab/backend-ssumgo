@@ -16,7 +16,7 @@ class PostsService(
     fun savePosts(command: PostsCreatedCommand): PostsResponse {
         val mentee = studentReader.get(command.menteeId)
         val subject = subjectReader.get(command.subjectId)
-        return PostsResponse.from(postsWriter.savePost(command.toDomain(mentee, subject)))
+        return PostsResponse.from(postsWriter.save(command.toDomain(mentee, subject)))
     }
 
     fun getPostsById(id: Long): PostsResponse {
