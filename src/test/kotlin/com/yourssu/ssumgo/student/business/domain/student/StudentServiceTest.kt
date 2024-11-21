@@ -1,60 +1,107 @@
 package com.yourssu.ssumgo.student.business.domain.student
 
-import com.yourssu.ssumgo.common.business.domain.auth.AuthService
-import com.yourssu.ssumgo.common.business.domain.auth.SignInCommand
-import com.yourssu.ssumgo.common.business.domain.auth.SignInResponse
-import com.yourssu.ssumgo.common.implement.support.soomsil.ProfileImageUrlsResponse
-import com.yourssu.ssumgo.common.implement.support.soomsil.TokenResponse
-import com.yourssu.ssumgo.common.implement.support.soomsil.UserResponse
-import com.yourssu.ssumgo.common.storage.support.soomsil.AuthFeignClientImpl
-import com.yourssu.ssumgo.common.storage.support.soomsil.SoomsilFeignClientImpl
-import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
-import org.mockito.kotlin.any
+import com.yourssu.ssumgo.common.support.config.ApplicationTest
+import com.yourssu.ssumgo.common.support.fixture.*
+import com.yourssu.ssumgo.student.implement.domain.comment.CommentWriter
+import com.yourssu.ssumgo.student.implement.domain.posts.PostsWriter
+import com.yourssu.ssumgo.student.implement.domain.student.Student
+import com.yourssu.ssumgo.student.implement.domain.student.StudentWriter
+import com.yourssu.ssumgo.student.implement.domain.subject.SubjectWriter
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.bean.override.mockito.MockitoBean
-import kotlin.test.assertEquals
 
-@SpringBootTest
+@ApplicationTest
 class StudentServiceTest {
     @Autowired
     private lateinit var studentService: StudentService
 
     @Autowired
-    private lateinit var authService: AuthService
+    private lateinit var studentWriter: StudentWriter
 
-    @MockitoBean
-    private lateinit var authClient: AuthFeignClientImpl
+    @Autowired
+    private lateinit var subjectWriter: SubjectWriter
 
-    @MockitoBean
-    private lateinit var userClient: SoomsilFeignClientImpl
+    @Autowired
+    private lateinit var postsWriter: PostsWriter
 
-    @Test
-    fun getStudent() {
-        val signInResponse = signIn(email = "leo@soonsil.ac.kr", password = "password")
+    @Autowired
+    private lateinit var commentWriter: CommentWriter
 
-        val response = studentService.getStudent(signInResponse.studentId)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class getStudent_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 학생_아이디를_받으면 {
+            @Test
+            @DisplayName("학생_정보를_반환한다.")
+            fun success() {
+                val student = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
 
-        assertEquals(signInResponse.studentId, response.studentId)
+                val response = studentService.getStudent(student.id!!)
+
+                assertEquals(student.yourssuId, response.yourssuId)
+            }
+        }
     }
 
-    private fun signIn(email: String, password: String): SignInResponse {
-        val signInCommand = SignInCommand(email, password)
-        `when`(authClient.signIn(any()))
-            .thenReturn(TokenResponse("access.Token.sign", "refresh.Token.sign"))
-        `when`(userClient.getUser(any()))
-            .thenReturn(
-                UserResponse(
-                    email = signInCommand.email,
-                    nickName = signInCommand.email.replace("@soongsil.ac.kr", ""),
-                    profileImage = ProfileImageUrlsResponse(
-                        smallUrl = "smallUrl",
-                        midUrl = "profileUrl",
-                        largeUrl = "largeUrl"
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class findAllCommentsByMentee_메서드는 {
+        private var mentee: Student? = null
+
+        @BeforeEach
+        fun setUp() {
+            mentee = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+            val mentor = studentWriter.save(StudentFixture.STUDENT_TOM.toDomain())
+            val subject = subjectWriter.save(SubjectFixture.SUBJECT_1.toDomain())
+            val posts = postsWriter.save(PostFixture.POST.toDomain(mentee!!, subject))
+            commentWriter.save(CommentFixture.COMMENT.toDomain(mentor, posts))
+        }
+
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 멘토가_등록한_답변이_있으면 {
+            @Test
+            @DisplayName("멘티가 등록한 답변을 모두 반환한다.")
+            fun success() {
+                val response =
+                    studentService.findAllCommentsByMentee(PageFixture.PAGE_LATEST.toCommentFoundByMenteeCommand(mentee!!.id!!))
+
+                assertEquals(1, response.totalCount)
+            }
+        }
+    }
+
+
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class findAllPostsByMentee_메서드는 {
+        private var mentee: Student? = null
+
+        @BeforeEach
+        fun setUp() {
+            mentee = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+            val subject = subjectWriter.save(SubjectFixture.SUBJECT_1.toDomain())
+            postsWriter.save(PostFixture.POST.toDomain(mentee!!, subject))
+        }
+
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 멘티가_등록한_질문이_있으면 {
+            @Test
+            @DisplayName("멘티가 등록한 질문을 모두 반환한다.")
+            fun success() {
+                val response =
+                    studentService.findAllPostsByMentee(
+                        PageFixture.PAGE_LATEST.toPostsFoundByMenteeCommand(
+                            mentee!!.id!!
+                        )
                     )
-                )
-            )
-        return authService.signIn(signInCommand)
+
+                assertEquals(1, response.totalCount)
+            }
+        }
     }
 }
