@@ -1,0 +1,26 @@
+server:
+  port: 8085
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: ${DB_HOST}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+security:
+  jwt:
+    token:
+      expiration-time: 3600000
+
+feign:
+  client:
+    config:
+      auth-url: "https://api.test.auth.yourssu.com"
+      ground-url: "https://test.ground.yourssu.com/ground"
