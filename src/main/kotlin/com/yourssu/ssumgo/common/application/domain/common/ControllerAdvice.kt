@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory.getLogger
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -132,6 +133,20 @@ class ControllerAdvice {
                 ErrorResponse(
                     status = HttpStatus.CONFLICT.value(),
                     message = "중복된 아이디가 존재합니다. {{ ${e.message} }}"
+                )
+            )
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
+    fun handleMethodNotAllowed(
+        e: HttpRequestMethodNotSupportedException
+    ): ResponseEntity<ErrorResponse> {
+        logger.error(e.message, e)
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+            .body(
+                ErrorResponse(
+                    status = HttpStatus.METHOD_NOT_ALLOWED.value(),
+                    message = "허용되지 않은 메소드입니다. {{ ${e.message} }}"
                 )
             )
     }
