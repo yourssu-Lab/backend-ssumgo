@@ -3,7 +3,7 @@ package com.yourssu.ssumgo.common.application.domain.common
 import feign.FeignException.FeignClientException
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory.getLogger
-import org.springframework.dao.DuplicateKeyException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -124,9 +124,9 @@ class ControllerAdvice {
             )
     }
 
-    @ExceptionHandler(DuplicateKeyException::class)
+    @ExceptionHandler(DataIntegrityViolationException::class)
     fun handleDuplicateKeyException(
-        e: DuplicateKeyException
+        e: DataIntegrityViolationException
     ): ResponseEntity<ErrorResponse> {
         logger.error(e.message, e)
         return ResponseEntity.status(HttpStatus.CONFLICT)
