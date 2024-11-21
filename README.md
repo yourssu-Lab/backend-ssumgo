@@ -14,6 +14,10 @@
 | <img width="300" align="center" alt="IMG_6678" src="https://avatars.githubusercontent.com/u/76774809?v=4"> |
 </div>
 
+## 규칙
+- Github Flow 전략을 따릅니다.
+- Commit, PR, Branch 머릿말은 "(feat|fix|docs|style|refactor|test|chore): 제목" 형식으로 작성합니다.
+
 
 ## 구현할 기능 목록
 
