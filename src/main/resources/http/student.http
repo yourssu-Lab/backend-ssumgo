@@ -1,5 +1,3 @@
-@serverUrl = localhost:8080
-
 @email = "nggus5@soongsil.ac.kr"
 @password = "leopassword123123"
 

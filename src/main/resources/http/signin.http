@@ -1,6 +1,3 @@
-@authUrl = https://api.test.auth.yourssu.com
-@serverUrl = localhost:8080
-
 // 이메일, 비밀번호를 설정한다.
 // @soongsil.ac.kr 이메일을 사용해야 한다.
 @email = "nggus5@soongsil.ac.kr"
