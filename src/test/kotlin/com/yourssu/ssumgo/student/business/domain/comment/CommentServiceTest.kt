@@ -1,9 +1,11 @@
 package com.yourssu.ssumgo.student.business.domain.comment
 
 import com.yourssu.ssumgo.common.support.config.ApplicationTest
-import com.yourssu.ssumgo.common.support.fixture.*
 import com.yourssu.ssumgo.common.support.fixture.CommentFixture.COMMENT
-import com.yourssu.ssumgo.student.business.domain.student.StudentService
+import com.yourssu.ssumgo.common.support.fixture.PageFixture
+import com.yourssu.ssumgo.common.support.fixture.PostFixture
+import com.yourssu.ssumgo.common.support.fixture.StudentFixture
+import com.yourssu.ssumgo.common.support.fixture.SubjectFixture
 import com.yourssu.ssumgo.student.implement.domain.comment.Comment
 import com.yourssu.ssumgo.student.implement.domain.comment.CommentWriter
 import com.yourssu.ssumgo.student.implement.domain.posts.Posts
@@ -20,9 +22,6 @@ import kotlin.test.assertNotNull
 class CommentServiceTest {
     @Autowired
     private lateinit var commentService: CommentService
-
-    @Autowired
-    private lateinit var studentService: StudentService
 
     @Autowired
     private lateinit var studentWriter: StudentWriter
