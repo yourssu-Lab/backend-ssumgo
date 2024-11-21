@@ -1,21 +1,20 @@
 package com.yourssu.ssumgo.student.business.domain.posts
 
-import com.yourssu.ssumgo.student.implement.domain.posts.Posts
-import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
-import com.yourssu.ssumgo.student.implement.domain.student.ProfileImageUrls
-import com.yourssu.ssumgo.student.implement.domain.student.Student
+import com.yourssu.ssumgo.common.support.config.ApplicationTest
+import com.yourssu.ssumgo.common.support.fixture.PageFixture
+import com.yourssu.ssumgo.common.support.fixture.PostFixture
+import com.yourssu.ssumgo.common.support.fixture.StudentFixture
+import com.yourssu.ssumgo.common.support.fixture.SubjectFixture
+import com.yourssu.ssumgo.student.implement.domain.posts.PostsWriter
 import com.yourssu.ssumgo.student.implement.domain.student.StudentWriter
 import com.yourssu.ssumgo.student.implement.domain.subject.Subject
 import com.yourssu.ssumgo.student.implement.domain.subject.SubjectWriter
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ApplicationTest
 class PostsServiceTest {
     @Autowired
     private lateinit var postsService: PostsService
@@ -26,103 +25,76 @@ class PostsServiceTest {
     @Autowired
     private lateinit var subjectWriter: SubjectWriter
 
-    private val student = Student(
-        yourssuId = "yourssuId",
-        nickname = "nickname",
-        profileImageUrls = ProfileImageUrls(
-            smallUrl = "smallUrl",
-            midUrl = "mediumUrl",
-            largeUrl = "largeUrl",
-        )
-    )
+    @Autowired
+    private lateinit var postsWriter: PostsWriter
 
-    private val subject = Subject(
-        subjectName = "과목명",
-        professorName = "교수명",
-        completion = "이수구분",
-        subjectCode = 1234,
-        time = 1,
-        department = "학과",
-        credit = 3,
-    )
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class savePosts_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 등록된_과목과_멘티이면 {
+            @Test
+            @DisplayName("질문을 등록한다.")
+            fun success() {
+                val mentee = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+                val subject = subjectWriter.save(SubjectFixture.SUBJECT_1.toDomain())
+                val command = PostFixture.POST.toPostsCreatedCommand(mentee.id!!, subject.id!!)
 
-    @Test
-    fun savePosts() {
-        // given
-        val savedStudent = studentWriter.save(student)
-        val savedSubject = subjectWriter.save(subject)
-        val posts = Posts(
-            title = "My title",
-            content = "My content",
-            mentee = savedStudent,
-            subject = savedSubject
-        )
-        val command = PostsCreatedCommand(
-            title = posts.title,
-            content = posts.content,
-            menteeId = savedStudent.id!!,
-            subjectId = savedSubject.id!!
-        )
+                val response = postsService.savePosts(command)
 
-        // when
-        val response = postsService.savePosts(command)
+                assertNotNull(response)
+            }
+        }
 
-        // then
-        assertNotNull(response)
-    }
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class getPostsById_메서드는 {
+            @BeforeEach
+            fun setUp() {
+                val mentee = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+                val subject = subjectWriter.save(SubjectFixture.SUBJECT_1.toDomain())
+                postsWriter.save(PostFixture.POST.toDomain(mentee, subject))
+            }
 
-    @Test
-    fun getPostsById() {
-        // given
-        val savedStudent = studentWriter.save(student)
-        val savedSubject = subjectWriter.save(subject)
-        val posts = save(savedStudent, savedSubject)
+            @Nested
+            @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+            inner class 등록된_질문이면 {
+                @Test
+                @DisplayName("질문_도메인을_반환한다.")
+                fun success() {
+                    val response = postsService.getPostsById(1L)
 
-        // when
-        val response = postsService.getPostsById(posts.postId)
+                    assertNotNull(response)
+                }
+            }
+        }
 
-        // then
-        assertEquals(posts.postId, response.postId)
-    }
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class findAllPostsBySubjectId_메서드는 {
+            private var subject: Subject? = null
 
-    @Test
-    fun findAllPostsBySubjectId() {
-        // given
-        val savedStudent = studentWriter.save(student)
-        val savedSubject = subjectWriter.save(subject)
-        val posts = (1..21).map { save(
-            mentee = savedStudent,
-            subject = savedSubject,
-            title = "title$it",
-            content = "content$it",
-        ) }
+            @BeforeEach
+            fun setUp() {
+                val mentee = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+                subject = subjectWriter.save(SubjectFixture.SUBJECT_1.toDomain())
+                postsWriter.save(PostFixture.POST.toDomain(mentee, subject!!))
+            }
 
-        // when
-        // pageNumber는 1부터 시작
-        val response = postsService.findAllPostsBySubjectId(
-            PostsFoundBySubjectCommand(
-                subjectId = savedSubject.id!!,
-                page = 3,
-                sortBy = SortBy.LATEST,
-                size = 10
-            )
-        )
+            @Nested
+            @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+            inner class 과목에_해당하는_질문이_있으면 {
+                @Test
+                @DisplayName("해당하는_모든_질문을_반환한다.")
+                fun success() {
+                    val response = postsService.findAllPostsBySubjectId(
+                        PageFixture.PAGE_LATEST.toPostsFoundBySubjectCommand(subject!!.id!!)
+                    )
 
-        // then
-        assertEquals(1, response.postsList.size)
-    }
-
-    private fun save(
-        mentee: Student,
-        subject: Subject,
-        title: String = "title",
-        content: String = "content"): PostsResponse {
-        val command = PostsCreatedCommand(
-            title = title,
-            content = content,
-            menteeId = mentee.id!!,
-            subjectId = subject.id!!
-        )
-        return postsService.savePosts(command)
+                    assertEquals(1, response.totalCount)
+                }
+            }
+        }
     }
 }
