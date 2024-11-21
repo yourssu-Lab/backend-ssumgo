@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.common.support.fixture
 
+import com.yourssu.ssumgo.student.business.domain.comment.CommentFoundBySubjectCommand
 import com.yourssu.ssumgo.student.business.domain.posts.PostsFoundBySubjectCommand
 import com.yourssu.ssumgo.student.business.domain.student.CommentFoundByMenteeCommand
 import com.yourssu.ssumgo.student.business.domain.student.PostsFoundByMenteeCommand
@@ -47,6 +48,15 @@ enum class PageFixture(
 
     fun toPostsFoundBySubjectCommand(subjectId: Long): PostsFoundBySubjectCommand {
         return PostsFoundBySubjectCommand(
+            subjectId = subjectId,
+            page = page,
+            sortBy = sortBy,
+            size = size,
+        )
+    }
+
+    fun toCommentFoundBySubjectCommand(subjectId: Long): CommentFoundBySubjectCommand {
+        return CommentFoundBySubjectCommand(
             subjectId = subjectId,
             page = page,
             sortBy = sortBy,

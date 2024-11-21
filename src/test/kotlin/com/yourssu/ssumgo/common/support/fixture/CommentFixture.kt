@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.common.support.fixture
 
+import com.yourssu.ssumgo.student.business.domain.comment.CommentCreatedCommand
 import com.yourssu.ssumgo.student.implement.domain.comment.Comment
 import com.yourssu.ssumgo.student.implement.domain.posts.Posts
 import com.yourssu.ssumgo.student.implement.domain.student.Student
@@ -19,6 +20,15 @@ enum class CommentFixture(
             posts = posts,
             title = title,
             content = content,
+        )
+    }
+
+    fun toCommentCreatedCommand(mentorId: Long, postsId: Long): CommentCreatedCommand {
+        return CommentCreatedCommand(
+            mentorId = mentorId,
+            postsId = postsId,
+            title = title,
+            content = content
         )
     }
 }

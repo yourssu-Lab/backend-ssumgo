@@ -1,138 +1,114 @@
 package com.yourssu.ssumgo.student.business.domain.comment
 
+import com.yourssu.ssumgo.common.support.config.ApplicationTest
+import com.yourssu.ssumgo.common.support.fixture.*
+import com.yourssu.ssumgo.common.support.fixture.CommentFixture.COMMENT
+import com.yourssu.ssumgo.student.business.domain.student.StudentService
+import com.yourssu.ssumgo.student.implement.domain.comment.Comment
+import com.yourssu.ssumgo.student.implement.domain.comment.CommentWriter
 import com.yourssu.ssumgo.student.implement.domain.posts.Posts
 import com.yourssu.ssumgo.student.implement.domain.posts.PostsWriter
-import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
-import com.yourssu.ssumgo.student.implement.domain.student.ProfileImageUrls
-import com.yourssu.ssumgo.student.implement.domain.student.Student
 import com.yourssu.ssumgo.student.implement.domain.student.StudentWriter
 import com.yourssu.ssumgo.student.implement.domain.subject.Subject
 import com.yourssu.ssumgo.student.implement.domain.subject.SubjectWriter
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
-import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ApplicationTest
 class CommentServiceTest {
     @Autowired
     private lateinit var commentService: CommentService
 
     @Autowired
+    private lateinit var studentService: StudentService
+
+    @Autowired
     private lateinit var studentWriter: StudentWriter
+
+    @Autowired
+    private lateinit var subjectWriter: SubjectWriter
 
     @Autowired
     private lateinit var postsWriter: PostsWriter
 
     @Autowired
-    private lateinit var subjectWriter: SubjectWriter
+    private lateinit var commentWriter: CommentWriter
 
-    @Test
-    fun save() {
-        val mentee = saveStudent("mentee")
-        val mentor = saveStudent("mentor")
-        val subject = saveSubject()
-        val posts = savePosts(mentee, subject)
-        val command = CommentCreatedCommand(
-            mentorId = mentor.id!!,
-            postsId = posts.id!!,
-            title = "title",
-            content = "content"
-        )
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class saveComment_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 등록된_멘토와_질문_이면 {
+            @Test
+            @DisplayName("댓글을 등록한다.")
+            fun success() {
+                val mentee = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+                val subject = subjectWriter.save(SubjectFixture.SUBJECT_1.toDomain())
+                val posts = postsWriter.save(PostFixture.POST.toDomain(mentee, subject))
+                val command = COMMENT.toCommentCreatedCommand(mentee.id!!, posts.id!!)
 
-        //when
-        val response = commentService.saveComment(command)
+                val response = commentService.saveComment(command)
 
-        //then
-        assertNotNull(response)
+                assertNotNull(response)
+            }
+        }
     }
 
-    @Test
-    fun getCommentById() {
-        val mentee = saveStudent("mentee")
-        val mentor = saveStudent("mentor")
-        val subject = saveSubject()
-        val posts = savePosts(mentee, subject)
-        val comment = saveComment(mentor, posts)
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class getCommentById_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 답변과_질문에_해당하는_답변이_존재하면 {
+            var posts: Posts? = null
+            var comment: Comment? = null
 
-        //when
-        val response = commentService.getCommentById(postId = posts.id!!, comment.commentId)
+            @BeforeEach
+            fun setUp() {
+                val mentee = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+                val subject = subjectWriter.save(SubjectFixture.SUBJECT_1.toDomain())
+                posts = postsWriter.save(PostFixture.POST.toDomain(mentee, subject))
+                comment = commentWriter.save(COMMENT.toDomain(mentee, posts!!))
+            }
 
-        //then
-        assertEquals(comment.commentId, response.commentId)
+            @Test
+            @DisplayName("답변을_반환한다.")
+            fun success() {
+                val response = commentService.getCommentById(posts!!.id!!, comment!!.id!!)
+
+                assertNotNull(response)
+            }
+        }
     }
 
-    @Test
-    fun findAllCommentsBySubject() {
-        val mentee = saveStudent("mentee")
-        val mentor = saveStudent("mentor")
-        val subject = saveSubject()
-        val posts1 = savePosts(mentee, subject)
-        val posts2 = savePosts(mentee, subject)
-        val comment1 = saveComment(mentor, posts1)
-        val comment2 = saveComment(mentor, posts2)
-        val command = CommentFoundBySubjectCommand(
-            subjectId = subject.id!!,
-            page = 1,
-            sortBy = SortBy.LATEST,
-            size = 10,
-        )
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class findAllCommentsBySubject_메서드는 {
+        var subject: Subject? = null
 
-        //when
-        val response = commentService.findAllCommentsByMentee(command)
+        @BeforeEach
+        fun setUp() {
+            val mentee = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+            subject = subjectWriter.save(SubjectFixture.SUBJECT_1.toDomain())
+            val posts = postsWriter.save(PostFixture.POST.toDomain(mentee, subject!!))
+            commentWriter.save(COMMENT.toDomain(mentee, posts))
+        }
 
-        //then
-        assertEquals(2, response.totalCount)
-    }
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 과목에_해당하는_답변이_존재하면 {
+            @Test
+            @DisplayName("해당하는 답변들을 모두 반환한다.")
+            fun success() {
+                val request= PageFixture.PAGE_LATEST.toCommentFoundBySubjectCommand(subject!!.id!!)
 
-    private fun saveComment(mentor: Student, posts: Posts): CommentResponse {
-        val command = CommentCreatedCommand(
-            mentorId = mentor.id!!,
-            postsId = posts.id!!,
-            title = "title",
-            content = "content"
-        )
-        return commentService.saveComment(command)
-    }
+                val response = commentService.findAllCommentsBySubject(request)
 
-    private fun saveStudent(yourssuId: String = "yourssuId"): Student {
-        return studentWriter.save(
-            Student(
-                yourssuId = yourssuId,
-                nickname = "nickname",
-                profileImageUrls = ProfileImageUrls(
-                    smallUrl = "smallUrl",
-                    midUrl = "mediumUrl",
-                    largeUrl = "largeUrl",
-                )
-            )
-        )
-    }
-
-    private fun saveSubject(subjectCode: Int = 1234): Subject {
-        return subjectWriter.save(
-            Subject(
-                subjectName = "과목명",
-                professorName = "교수명",
-                completion = "이수구분",
-                subjectCode = subjectCode,
-                time = 1,
-                department = "디지털미디어학부",
-                credit = 3,
-            )
-        )
-    }
-
-    private fun savePosts(mentee: Student, subject: Subject): Posts {
-        val post = Posts(
-            title = "title",
-            content = "content",
-            mentee = mentee,
-            subject = subject,
-        )
-        return postsWriter.save(post)
+                assertEquals(1, response.totalCount)
+            }
+        }
     }
 }
