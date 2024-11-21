@@ -2,6 +2,7 @@ package com.yourssu.ssumgo.common.storage.domain.auth
 
 import com.yourssu.ssumgo.common.application.domain.common.UnauthorizedException
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
 import org.springframework.beans.factory.annotation.Value
@@ -56,7 +57,7 @@ class JwtTokenProvider(
                 .build()
                 .parseEncryptedClaims(token)
                 .payload
-        } catch (e: MalformedJwtException) {
+        } catch (e: JwtException) {
             throw UnAuthorizedTokenException()
         }
     }
