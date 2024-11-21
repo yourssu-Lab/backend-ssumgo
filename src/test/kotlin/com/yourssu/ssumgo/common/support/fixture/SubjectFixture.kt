@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.common.support.fixture
 
+import com.yourssu.ssumgo.student.business.domain.subject.SubjectCreatedCommand
 import com.yourssu.ssumgo.student.implement.domain.subject.Subject
 
 enum class SubjectFixture(
@@ -41,6 +42,18 @@ enum class SubjectFixture(
 
     fun toDomain(): Subject {
         return Subject(
+            subjectName = subjectName,
+            professorName = professorName,
+            completion = completion,
+            subjectCode = subjectCode,
+            department = department,
+            time = time,
+            credit = credit,
+        )
+    }
+
+    fun toCreatedCommand(): SubjectCreatedCommand {
+        return SubjectCreatedCommand(
             subjectName = subjectName,
             professorName = professorName,
             completion = completion,
