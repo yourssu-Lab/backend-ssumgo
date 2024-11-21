@@ -58,7 +58,7 @@ class SubjectController(
             sortBy = SortBy.of(sortBy),
             size = size,
         )
-        val response = commentService.findAllCommentsByMentee(command)
+        val response = commentService.findAllCommentsBySubject(command)
         return ResponseEntity.ok(Response(result = response))
     }
 }

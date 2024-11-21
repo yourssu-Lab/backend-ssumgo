@@ -25,7 +25,7 @@ class CommentService(
         return CommentResponse.from(commentReader.getByPost(postId = postId, commentId = commentId))
     }
 
-    fun findAllCommentsByMentee(command: CommentFoundBySubjectCommand): CommentsPageResponse {
+    fun findAllCommentsBySubject(command: CommentFoundBySubjectCommand): CommentsPageResponse {
         val subject = subjectReader.get(command.subjectId)
         val commentsPage = commentReader.getAllBySubject(
             subjectId = subject.id!!,
