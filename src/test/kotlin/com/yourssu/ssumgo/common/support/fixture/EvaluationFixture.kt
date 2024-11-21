@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.common.support.fixture
 
+import com.yourssu.ssumgo.student.business.domain.evaluation.EvaluationCreatedCommand
 import com.yourssu.ssumgo.student.implement.domain.comment.Comment
 import com.yourssu.ssumgo.student.implement.domain.evaluation.Evaluation
 import com.yourssu.ssumgo.student.implement.domain.evaluation.Rating
@@ -19,6 +20,15 @@ enum class EvaluationFixture(
         return Evaluation(
             mentee = mentee,
             comment = comment,
+            rating = rating,
+            additionalInfo = additionalInfo,
+        )
+    }
+
+    fun toEvaluationCreatedCommand(menteeId: Long, commentId: Long): EvaluationCreatedCommand {
+        return EvaluationCreatedCommand(
+            menteeId = menteeId,
+            commentId = commentId,
             rating = rating,
             additionalInfo = additionalInfo,
         )
