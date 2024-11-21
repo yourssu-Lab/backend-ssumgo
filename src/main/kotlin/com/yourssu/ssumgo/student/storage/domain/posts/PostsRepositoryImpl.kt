@@ -60,7 +60,7 @@ data class PostsPage(
 interface PostsJpaRepository : JpaRepository<PostsEntity, Long> {
     @Query(
         value = "SELECT p FROM PostsEntity p " +
-                "JOIN FETCH p.subject " +
+                "JOIN p.subject " +
                 "WHERE p.subject.id = :subjectId",
         countQuery = "SELECT COUNT(p) FROM PostsEntity p WHERE p.subject.id = :subjectId"
     )
@@ -68,7 +68,7 @@ interface PostsJpaRepository : JpaRepository<PostsEntity, Long> {
 
     @Query(
         value = "SELECT p FROM PostsEntity p " +
-                "JOIN FETCH p.mentee " +
+                "JOIN p.mentee " +
                 "WHERE p.mentee.id = :menteeId",
         countQuery = "SELECT COUNT(p) FROM PostsEntity p WHERE p.mentee.id = :menteeId"
     )
