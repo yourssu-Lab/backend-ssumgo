@@ -3,6 +3,7 @@ package com.yourssu.ssumgo.common.storage.domain.auth
 import com.yourssu.ssumgo.common.application.domain.common.UnauthorizedException
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.*
@@ -49,12 +50,15 @@ class JwtTokenProvider(
     }
 
     private fun parseToken(token: String): Claims {
-        return Jwts.parser()
-            .decryptWith(secretKey)
-            .build()
-            .parseEncryptedClaims(token)
-            .payload
-            ?: throw UnAuthorizedTokenException()
+        try {
+            return Jwts.parser()
+                .decryptWith(secretKey)
+                .build()
+                .parseEncryptedClaims(token)
+                .payload
+        } catch (e: MalformedJwtException) {
+            throw UnAuthorizedTokenException()
+        }
     }
 }
 
