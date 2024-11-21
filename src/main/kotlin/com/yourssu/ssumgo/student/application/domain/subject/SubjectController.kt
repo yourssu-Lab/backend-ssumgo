@@ -5,6 +5,7 @@ import com.yourssu.ssumgo.common.implement.domain.auth.StudentId
 import com.yourssu.ssumgo.student.business.domain.comment.CommentFoundBySubjectCommand
 import com.yourssu.ssumgo.student.business.domain.comment.CommentService
 import com.yourssu.ssumgo.student.business.domain.comment.CommentsPageResponse
+import com.yourssu.ssumgo.student.business.domain.subject.StudentSubjectCreatedCommand
 import com.yourssu.ssumgo.student.business.domain.subject.SubjectCreatedCommand
 import com.yourssu.ssumgo.student.business.domain.subject.SubjectResponse
 import com.yourssu.ssumgo.student.business.domain.subject.SubjectService
@@ -26,9 +27,15 @@ class SubjectController(
     private val commentService: CommentService,
 ) {
     @PostMapping
-    fun createSubject(@Valid @RequestBody request: SubjectCreatedRequest): ResponseEntity<Response<SubjectResponse>> {
+    fun createSubject(@StudentId studentId: Long, @Valid @RequestBody request: SubjectCreatedRequest): ResponseEntity<Response<SubjectResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(Response(result = subjectService.saveSubject(request.toCommand())))
+    }
+
+    @PostMapping("/students")
+    fun createStudentSubject(@StudentId studentId: Long, @Valid @RequestBody request: StudentSubjectCreatedRequest): ResponseEntity<Response<SubjectResponse>> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(Response(result = subjectService.saveStudentSubject(request.toCommand(studentId))))
     }
 
     @GetMapping
@@ -60,6 +67,26 @@ class SubjectController(
         )
         val response = commentService.findAllCommentsBySubject(command)
         return ResponseEntity.ok(Response(result = response))
+    }
+}
+
+data class StudentSubjectCreatedRequest(
+    @Positive
+    val subjectId: Long,
+
+    @Positive
+    val years: Int,
+
+    @Range(min = 1, max = 2)
+    val semester: Int,
+) {
+    fun toCommand(studentId: Long): StudentSubjectCreatedCommand {
+        return StudentSubjectCreatedCommand(
+            studentId = studentId,
+            subjectId = subjectId,
+            years = years,
+            semester = semester,
+        )
     }
 }
 
