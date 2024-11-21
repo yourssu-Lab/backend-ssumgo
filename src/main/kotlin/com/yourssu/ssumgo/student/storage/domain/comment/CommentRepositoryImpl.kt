@@ -24,6 +24,11 @@ class CommentRepositoryImpl(
             ?: throw CommentNotFoundException()
     }
 
+    override fun get(commentId: Long): Comment {
+        return commentJpaRepository.get(commentId)?.toDomain()
+            ?: throw CommentNotFoundException()
+    }
+
     override fun existsComment(postId: Long): Boolean {
         return commentJpaRepository.existsByPostId(postId)
     }
@@ -77,6 +82,9 @@ data class CommentsPage(
 interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
     @Query("select c from CommentEntity c where c.posts.id = :postId and c.id = :commentId")
     fun get(postId: Long, commentId: Long): CommentEntity?
+
+    @Query("select c from CommentEntity c where c.id = :commentId")
+    fun get(commentId: Long): CommentEntity?
 
     @Query(
         value = "SELECT c FROM CommentEntity c " +

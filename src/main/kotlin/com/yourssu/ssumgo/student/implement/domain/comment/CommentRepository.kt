@@ -8,6 +8,8 @@ interface CommentRepository {
 
     fun get(postId: Long, commentId: Long): Comment
 
+    fun get(commentId: Long): Comment
+
     fun existsComment(postId: Long): Boolean
 
     fun findAllBySubject(
@@ -16,6 +18,5 @@ interface CommentRepository {
         pageSize: Int,
         sortBy: SortBy
     ): CommentsPage
-
     fun findAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage
 }
