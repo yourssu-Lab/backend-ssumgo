@@ -8,7 +8,7 @@ class PostsWriter(
     private val postsRepository: PostsRepository,
 ) {
     @Transactional
-    fun savePost(posts: Posts): Posts {
+    fun save(posts: Posts): Posts {
         return postsRepository.save(posts)
     }
 }

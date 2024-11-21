@@ -133,6 +133,6 @@ class CommentServiceTest {
             mentee = mentee,
             subject = subject,
         )
-        return postsWriter.savePost(post)
+        return postsWriter.save(post)
     }
 }

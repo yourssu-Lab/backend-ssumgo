@@ -5,7 +5,6 @@ import org.junit.jupiter.api.*
 
 @ApplicationTest
 class ServiceTestTemplate {
-
     @BeforeEach
     fun setUp() {
 
