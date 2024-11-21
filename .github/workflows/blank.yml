@@ -10,6 +10,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,15 +26,9 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-        working-directory: ./
 
-      - name: Build with Gradle
+      - name: Clean Build with Gradle(with Test)
         run: ./gradlew clean build
-        working-directory: ./
-
-      - name: Run tests
-        run: ./gradlew test
-        working-directory: ./
 
       - name: Deploy to EC2
         env:
