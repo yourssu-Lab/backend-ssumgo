@@ -18,6 +18,7 @@ import com.yourssu.ssumgo.student.storage.domain.subject.SubjectRepositoryImpl
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ApplicationTest
 class EvaluationRepositoryImplTest {
@@ -77,10 +78,31 @@ class EvaluationRepositoryImplTest {
         inner class 답변에_해당하는_평가가_존재하지_않으면 {
             @Test
             @DisplayName("EvaluationNotFoundException 예외를 던진다.")
-            fun success() {
+            fun failure() {
                 assertThrows<EvaluationNotFoundException>(
                     { evaluationRepositoryImpl.getByCommentId(1L) },
                 )
+            }
+        }
+    }
+
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class existsByCommentId_메서드는 {
+        @BeforeEach
+        fun setUp() {
+            val evaluation = EvaluationFixture.FIVE.toDomain(mentee!!, comment!!)
+            evaluationRepositoryImpl.save(evaluation)
+        }
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 답변에_해당하는_평가가_존재하면 {
+            @Test
+            @DisplayName("true를 반환한다.")
+            fun success() {
+                val actual = evaluationRepositoryImpl.existsByCommentId(comment!!.id!!)
+
+                assertTrue(actual)
             }
         }
     }
