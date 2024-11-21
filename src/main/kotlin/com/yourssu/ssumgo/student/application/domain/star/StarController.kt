@@ -21,8 +21,8 @@ class StarController(
     private val starService: StarService
 ) {
     @PostMapping
-    fun save(@StudentId studentId: Long, @Positive @RequestParam commentId: Long): ResponseEntity<Response<CommentResponse>> {
-        val response = starService.saveStar(StarCreatedCommand(commentId = commentId, studentId = studentId))
+    fun save(@StudentId studentId: Long, @RequestBody request: StarCreateRequest): ResponseEntity<Response<CommentResponse>> {
+        val response = starService.saveStar(StarCreatedCommand(commentId = request.commentId, studentId = studentId))
         return ResponseEntity.status(HttpStatus.CREATED).body(Response(result = response))
     }
 
@@ -48,3 +48,8 @@ class StarController(
         return ResponseEntity.noContent().build()
     }
 }
+
+data class StarCreateRequest(
+    @Positive
+    val commentId: Long
+)
