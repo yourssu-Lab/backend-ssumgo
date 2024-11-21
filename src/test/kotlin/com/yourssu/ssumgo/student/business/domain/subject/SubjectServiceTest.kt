@@ -2,9 +2,11 @@ package com.yourssu.ssumgo.student.business.domain.subject
 
 import com.yourssu.ssumgo.common.support.config.ApplicationTest
 import com.yourssu.ssumgo.common.support.fixture.StudentFixture
+import com.yourssu.ssumgo.common.support.fixture.StudentSubjectFixture
 import com.yourssu.ssumgo.common.support.fixture.SubjectFixture.SUBJECT_1
 import com.yourssu.ssumgo.student.implement.domain.student.Student
 import com.yourssu.ssumgo.student.implement.domain.student.StudentWriter
+import com.yourssu.ssumgo.student.implement.domain.subject.Subject
 import com.yourssu.ssumgo.student.implement.domain.subject.SubjectWriter
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -80,6 +82,37 @@ class SubjectServiceTest {
                 val response = subjectService.getSubjectsByStudent(student!!.id!!, 2024, 2)
 
                 assertEquals(1, response.size)
+            }
+        }
+    }
+
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class saveStudentSubject_메서드는 {
+        private var student: Student? = null
+        private var subject: Subject? = null
+
+
+        @BeforeEach
+        fun setUp() {
+            student = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+            subject = subjectWriter.save(SUBJECT_1.toDomain())
+        }
+
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 해당_과목과_학생이_주어지면 {
+            @Test
+            @DisplayName("수강_과목을_등록한다.")
+            fun success() {
+                val response = subjectService.saveStudentSubject(
+                    StudentSubjectFixture.SEMESTER_1.toStudentSubjectCreatedCommand(
+                        subjectId = subject!!.id!!,
+                        studentId = student!!.id!!
+                    )
+                )
+
+                assertNotNull(response)
             }
         }
     }
