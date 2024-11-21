@@ -28,7 +28,7 @@ class StudentSubjectRepositoryImplTest {
 
     @BeforeEach
     fun setUp() {
-        student = studentRepositoryImpl.saveOrUpdate(STUDENT_LEO.toStudent())
+        student = studentRepositoryImpl.saveOrUpdate(STUDENT_LEO.toDomain())
         subject = subjectRepositoryImpl.save(SUBJECT_1.toDomain())
     }
 

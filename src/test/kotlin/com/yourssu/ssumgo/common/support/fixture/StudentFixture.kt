@@ -33,7 +33,7 @@ enum class StudentFixture(
         profileImageUrls = PROFILE_IMAGE.toProfileImageUrls()
     );
 
-    fun toStudent(nickname: String = this.nickname): Student {
+    fun toDomain(nickname: String = this.nickname): Student {
         return Student(
             yourssuId = yourssuId,
             nickname = nickname,
