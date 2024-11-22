@@ -48,7 +48,7 @@ Content-Type: application/json
 {
   "subjectId": {{subjectId}},
   "years": 2024,
-  "semester": 1
+  "semester": 2
 }
 
 ###
@@ -62,8 +62,7 @@ Content-Type: application/json
 
 //수강 중인 과목 조회
 ###
-GET {{serverUrl}}/subjects/students
+GET {{serverUrl}}/subjects/students?years=2024&semester=2
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
-
 ###
