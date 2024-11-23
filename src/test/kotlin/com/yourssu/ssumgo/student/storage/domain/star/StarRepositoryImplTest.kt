@@ -133,4 +133,29 @@ class StarRepositoryImplTest {
             }
         }
     }
+
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class getCommentsByStar_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 별점이_등록된_답변이_있을_경우 {
+            @BeforeEach
+            fun setUp() {
+                val star = Star(
+                    student = student!!,
+                    comment = comment!!
+                )
+                starRepository.save(star)
+            }
+
+            @Test
+            @DisplayName("별점이 많이 등록된 답변 순으로 반환한다..")
+            fun success() {
+                val actual = starRepository.getCommentsByStar()
+
+                assertEquals(1, actual.size)
+            }
+        }
+    }
 }

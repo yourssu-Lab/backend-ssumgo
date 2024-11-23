@@ -1,6 +1,7 @@
 package com.yourssu.ssumgo.student.storage.domain.star
 
 import com.yourssu.ssumgo.common.application.domain.common.NotFoundException
+import com.yourssu.ssumgo.student.implement.domain.comment.Comment
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
 import com.yourssu.ssumgo.student.implement.domain.star.Star
 import com.yourssu.ssumgo.student.implement.domain.star.StarRepository
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class StarRepositoryImpl(
     private val starJpaRepository: StarJpaRepository
-): StarRepository {
+) : StarRepository {
     override fun save(star: Star): Star {
         return starJpaRepository.save(StarEntity.toEntity(star)).toDomain()
     }
@@ -37,6 +38,10 @@ class StarRepositoryImpl(
         starJpaRepository.deleteByCommentId(studentId = studentId, commentId = commentId)
     }
 
+    override fun getCommentsByStar(): List<Comment> {
+        return starJpaRepository.getCommentsByStar().map { it.toDomain() }
+    }
+
     private fun getPageable(
         pageNumber: Int,
         pageSize: Int,
@@ -44,7 +49,7 @@ class StarRepositoryImpl(
     ) = PageRequest.of(pageNumber, pageSize, sortBy.direction, "createdDate")
 }
 
-interface StarJpaRepository: JpaRepository<StarEntity, Long> {
+interface StarJpaRepository : JpaRepository<StarEntity, Long> {
     @Query("select s from StarEntity s where s.id = :id")
     fun get(id: Long): StarEntity?
 
@@ -62,6 +67,15 @@ interface StarJpaRepository: JpaRepository<StarEntity, Long> {
     @Query("delete from StarEntity s where s.comment.id = :commentId and s.student.id = :studentId")
     fun deleteByCommentId(studentId: Long, commentId: Long)
 
+    @Query(
+        "select c from CommentEntity c " +
+                "left join StarEntity s " +
+                "on s.comment = c " +
+                "group by c " +
+                "order by count(s) desc " +
+                "limit 10"
+    )
+    fun getCommentsByStar(): List<CommentEntity>
 }
 
 class StarNotFoundException : NotFoundException(message = "보관함에 등록되지 않은 좋아요입니다.")
