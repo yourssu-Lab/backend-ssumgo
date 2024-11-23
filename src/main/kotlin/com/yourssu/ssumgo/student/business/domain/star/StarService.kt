@@ -32,6 +32,10 @@ class StarService(
         return starReader.getAllByStudent(studentId, pageNumber, pageSize, sortBy)
     }
 
+    fun getAllCommentByStar(): List<CommentResponse> {
+        return starReader.getCommentByStar().map{CommentResponse.from(it)}
+    }
+
     fun deleteByComment(studentId: Long, commentId: Long) {
         starWriter.deleteByComment(studentId = studentId, commentId = commentId)
     }
