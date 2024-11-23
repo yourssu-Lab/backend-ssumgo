@@ -96,4 +96,33 @@ class StarServiceTest {
             }
         }
     }
+
+
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class getAllCommentByStar_메서드는 {
+        @BeforeEach
+        fun setUp() {
+            val student = studentWriter.save(StudentFixture.STUDENT_MAI.toDomain())
+            val mentee = studentWriter.save(StudentFixture.STUDENT_LEO.toDomain())
+            val subject = subjectWriter.save(SubjectFixture.SUBJECT_1.toDomain())
+            val posts1 = postsWriter.save(PostFixture.POST.toDomain(mentee, subject))
+            val posts2 = postsWriter.save(PostFixture.POST.toDomain(mentee, subject))
+            val comment = commentWriter.save(COMMENT.toDomain(mentee, posts1))
+            commentWriter.save(COMMENT.toDomain(mentee, posts2))
+            starWriter.save(Star(comment = comment, student = student))
+        }
+
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 좋아요한_답변이_존재하면 {
+            @Test
+            @DisplayName("좋아요를 많이 받은 순으로 답변을 반환한다.")
+            fun success() {
+                val comments = starService.getAllCommentByStar()
+
+                assertEquals(2, comments.size)
+            }
+        }
+    }
 }
