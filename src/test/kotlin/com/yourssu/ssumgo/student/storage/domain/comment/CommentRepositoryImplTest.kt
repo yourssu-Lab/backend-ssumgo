@@ -126,6 +126,34 @@ class CommentRepositoryImplTest {
 
     @Nested
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+    inner class findAllWithQuery_메서드는 {
+        @Nested
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
+        inner class 해당_과목에_등록된_답변이_있으며_검색어와_일치할_경우 {
+            @BeforeEach
+            fun setUp() {
+                commentRepository.save(COMMENT.toDomain(mentor!!, posts!!))
+                commentRepository.save(COMMENT.toDomain(mentor!!, posts2!!))
+            }
+
+            @Test
+            @DisplayName("해당 과목에 등록된 모든 답변들을 반환한다.")
+            fun success() {
+                val actual = commentRepository.findAllBySubjectWithSearch(
+                    subjectId = subject!!.id!!,
+                    pageNumber = 0,
+                    pageSize = 10,
+                    sortBy = SortBy.LATEST,
+                    query = COMMENT.title
+                )
+
+                assertEquals(2, actual.content.size)
+            }
+        }
+    }
+
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
     inner class findAllByMentee_메서드는 {
         @Nested
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
