@@ -129,7 +129,7 @@ class CommentRepositoryImplTest {
     inner class findAllWithQuery_메서드는 {
         @Nested
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores::class)
-        inner class 해당_과목에_등록된_답변이_있으며_검색어와_일치할_경우 {
+        inner class 해당_과목에_등록된_답변이_검색어와_일치하지_않을_경우 {
             @BeforeEach
             fun setUp() {
                 commentRepository.save(COMMENT.toDomain(mentor!!, posts!!))
@@ -137,14 +137,14 @@ class CommentRepositoryImplTest {
             }
 
             @Test
-            @DisplayName("해당 과목에 등록된 모든 답변들을 반환한다.")
+            @DisplayName("해당 과목에 등록된 모든 답변들을 반환하지 않는다.")
             fun success() {
                 val actual = commentRepository.findAllBySubjectWithSearch(
                     subjectId = subject!!.id!!,
                     pageNumber = 0,
                     pageSize = 10,
                     sortBy = SortBy.LATEST,
-                    query = COMMENT.title
+                    query = "content"
                 )
 
                 assertEquals(2, actual.content.size)
