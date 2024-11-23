@@ -115,11 +115,18 @@ interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
     @Query(
         value = "SELECT c FROM CommentEntity c " +
                 "JOIN c.posts p " +
-                "WHERE p.subject.id = :subjectId",
+                "WHERE p.subject.id = :subjectId " +
+                "AND (c.content LIKE CONCAT('%', :query, '%') " +
+                "OR c.title LIKE CONCAT('%', :query, '%') " +
+                "OR p.title LIKE CONCAT('%', :query, '%') " +
+                "OR p.content LIKE CONCAT('%', :query, '%'))",
         countQuery = "SELECT COUNT(c) FROM CommentEntity c " +
-                "WHERE c.posts.subject.id = :subjectId " +
-                "AND ((c.content LIKE %:query%) OR (c.title LIKE %:query%) " +
-                "OR (c.posts.title LIKE %:query%) OR (c.posts.content LIKE %:query%))"
+                "JOIN c.posts p " +
+                "WHERE p.subject.id = :subjectId " +
+                "AND (c.content LIKE CONCAT('%', :query, '%') " +
+                "OR c.title LIKE CONCAT('%', :query, '%') " +
+                "OR p.title LIKE CONCAT('%', :query, '%') " +
+                "OR p.content LIKE CONCAT('%', :query, '%'))"
     )
     fun findAllBySubjectIdWithQuery(subjectId: Long, query: String, pageable: Pageable): Page<CommentEntity>
 

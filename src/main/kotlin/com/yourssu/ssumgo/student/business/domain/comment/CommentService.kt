@@ -29,15 +29,15 @@ class CommentService(
     fun findAllCommentsBySubject(command: CommentFoundBySubjectCommand): CommentsPageResponse {
         val subject = subjectReader.get(command.subjectId)
         if (command.query.isBlank()) {
-            return findAllCommentsWithSearch(subject, command)
+            val commentsPage = commentReader.getAllBySubject(
+                subjectId = subject.id!!,
+                pageNumber = command.page,
+                pageSize = command.size,
+                sortBy = command.sortBy
+            )
+            return CommentsPageResponse.from(commentsPage)
         }
-        val commentsPage = commentReader.getAllBySubject(
-            subjectId = subject.id!!,
-            pageNumber = command.page,
-            pageSize = command.size,
-            sortBy = command.sortBy
-        )
-        return CommentsPageResponse.from(commentsPage)
+        return findAllCommentsWithSearch(subject, command)
     }
 
     private fun findAllCommentsWithSearch(
