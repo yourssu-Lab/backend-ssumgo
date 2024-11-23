@@ -30,6 +30,17 @@ class CommentReader(
     }
 
     @Transactional(readOnly = true)
+    fun getAllBySubjectWithSearch(subjectId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy, query: String): CommentsPage {
+        return commentRepository.findAllBySubjectWithSearch(
+            subjectId = subjectId,
+            pageNumber = pageNumber - 1,
+            pageSize = pageSize,
+            sortBy = sortBy,
+            query = query,
+        )
+    }
+
+    @Transactional(readOnly = true)
     fun getAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
         return commentRepository.findAllByMentee(
             menteeId = menteeId,

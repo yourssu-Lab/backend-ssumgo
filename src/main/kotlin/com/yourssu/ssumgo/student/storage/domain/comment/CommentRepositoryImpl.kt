@@ -46,6 +46,21 @@ class CommentRepositoryImpl(
         return CommentsPage.from(comments)
     }
 
+    override fun findAllBySubjectWithSearch(
+        subjectId: Long,
+        pageNumber: Int,
+        pageSize: Int,
+        sortBy: SortBy,
+        query: String
+    ): CommentsPage {
+        val comments = commentJpaRepository.findAllBySubjectIdWithQuery(
+            subjectId = subjectId,
+            query = query,
+            pageable = getPageable(pageNumber, pageSize, sortBy)
+        )
+        return CommentsPage.from(comments)
+    }
+
     override fun findAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage {
         val comments = commentJpaRepository.findAllByMenteeId(
             menteeId = menteeId,
@@ -96,6 +111,17 @@ interface CommentJpaRepository : JpaRepository<CommentEntity, Long> {
 
     @Query("select (count(c) > 0) from CommentEntity c where c.posts.id = :postId")
     fun existsByPostId(postId: Long): Boolean
+
+    @Query(
+        value = "SELECT c FROM CommentEntity c " +
+                "JOIN c.posts p " +
+                "WHERE p.subject.id = :subjectId",
+        countQuery = "SELECT COUNT(c) FROM CommentEntity c " +
+                "WHERE c.posts.subject.id = :subjectId " +
+                "AND ((c.content LIKE %:query%) OR (c.title LIKE %:query%) " +
+                "OR (c.posts.title LIKE %:query%) OR (c.posts.content LIKE %:query%))"
+    )
+    fun findAllBySubjectIdWithQuery(subjectId: Long, query: String, pageable: Pageable): Page<CommentEntity>
 
     @Query(
         value = "SELECT c FROM CommentEntity c " +

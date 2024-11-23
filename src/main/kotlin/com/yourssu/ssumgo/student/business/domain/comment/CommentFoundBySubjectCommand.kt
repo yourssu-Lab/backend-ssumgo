@@ -7,4 +7,5 @@ data class CommentFoundBySubjectCommand(
     val page: Int,
     val sortBy: SortBy,
     val size: Int,
+    val query: String = "",
 )

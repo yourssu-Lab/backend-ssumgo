@@ -18,5 +18,6 @@ interface CommentRepository {
         pageSize: Int,
         sortBy: SortBy
     ): CommentsPage
+    fun findAllBySubjectWithSearch(subjectId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy, query: String): CommentsPage
     fun findAllByMentee(menteeId: Long, pageNumber: Int, pageSize: Int, sortBy: SortBy): CommentsPage
 }
