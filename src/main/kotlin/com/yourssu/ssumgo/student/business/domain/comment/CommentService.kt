@@ -4,6 +4,7 @@ import com.yourssu.ssumgo.student.implement.domain.comment.CommentReader
 import com.yourssu.ssumgo.student.implement.domain.comment.CommentWriter
 import com.yourssu.ssumgo.student.implement.domain.posts.PostsReader
 import com.yourssu.ssumgo.student.implement.domain.student.StudentReader
+import com.yourssu.ssumgo.student.implement.domain.subject.Subject
 import com.yourssu.ssumgo.student.implement.domain.subject.SubjectReader
 import org.springframework.stereotype.Service
 
@@ -27,11 +28,28 @@ class CommentService(
 
     fun findAllCommentsBySubject(command: CommentFoundBySubjectCommand): CommentsPageResponse {
         val subject = subjectReader.get(command.subjectId)
+        if (command.query.isBlank()) {
+            return findAllCommentsWithSearch(subject, command)
+        }
         val commentsPage = commentReader.getAllBySubject(
             subjectId = subject.id!!,
             pageNumber = command.page,
             pageSize = command.size,
             sortBy = command.sortBy
+        )
+        return CommentsPageResponse.from(commentsPage)
+    }
+
+    private fun findAllCommentsWithSearch(
+        subject: Subject,
+        command: CommentFoundBySubjectCommand
+    ): CommentsPageResponse {
+        val commentsPage = commentReader.getAllBySubjectWithSearch(
+            subjectId = subject.id!!,
+            pageNumber = command.page,
+            pageSize = command.size,
+            sortBy = command.sortBy,
+            query = command.query,
         )
         return CommentsPageResponse.from(commentsPage)
     }

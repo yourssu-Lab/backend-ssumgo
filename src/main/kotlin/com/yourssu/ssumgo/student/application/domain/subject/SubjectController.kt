@@ -58,12 +58,14 @@ class SubjectController(
         @Positive @RequestParam(defaultValue = "1") page: Int,
         @NotBlank @RequestParam(defaultValue = "latest") sortBy: String,
         @Positive @RequestParam(defaultValue = "10") size: Int,
+        @RequestParam(defaultValue = "") q: String,
     ): ResponseEntity<Response<CommentsPageResponse>> {
         val command = CommentFoundBySubjectCommand(
             subjectId = subjectId,
             page = page,
             sortBy = SortBy.of(sortBy),
             size = size,
+            query = q,
         )
         val response = commentService.findAllCommentsBySubject(command)
         return ResponseEntity.ok(Response(result = response))
