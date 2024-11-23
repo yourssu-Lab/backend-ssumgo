@@ -1,5 +1,6 @@
 package com.yourssu.ssumgo.student.implement.domain.star
 
+import com.yourssu.ssumgo.student.implement.domain.comment.Comment
 import com.yourssu.ssumgo.student.implement.domain.posts.SortBy
 import com.yourssu.ssumgo.student.storage.domain.comment.CommentsPage
 import org.springframework.stereotype.Component
@@ -17,5 +18,9 @@ class StarReader(
             pageSize = pageSize,
             sortBy = sortBy
         )
+    }
+
+    fun getCommentByStar() : List<Comment> {
+        return starRepository.getCommentsByStar()
     }
 }
