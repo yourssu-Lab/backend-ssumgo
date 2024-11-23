@@ -36,3 +36,10 @@ GET {{serverUrl}}/posts/{{postsId}}/comments/{{commentId}}
 Content-Type: application/json
 
 ###
+
+// 인기 답변 추천
+###
+GET {{serverUrl}}/posts/comments/popular
+Content-Type: application/json
+
+###
